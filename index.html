@@ -181,7 +181,15 @@
 
         function getPrettyPath(path) {
           console.log(`Getting pretty path for: ${path}`);
-            const matchedVersion = siteVersions.find(version => normalizePath(path) === normalizePath(version.path));
+            const normalizedPath = normalizePath(path)
+                .replace(/(?:^|\/)index\.html$/, '')
+                .replace(/\/+$/, '');
+            const matchedVersion = siteVersions.find(version => {
+                const versionPath = normalizePath(version.path)
+                    .replace(/(?:^|\/)index\.html$/, '')
+                    .replace(/\/+$/, '');
+                return normalizedPath.startsWith(versionPath);
+            });
             return matchedVersion ? `/${normalizePath(matchedVersion.path).replace(/(?:^|\/)index\.html$/, '')}` : null;
         }
 
