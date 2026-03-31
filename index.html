@@ -1,70 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIBERTY</title>
-  <base target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Version Selector</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevents scrollbars on the main container */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* The iFrame Container */
+        #site-frame {
+            width: 100%;
+            height: calc(100% - 60px); /* Leaves 60px space at the bottom for the nav */
+            border: none;
+            display: block;
+        }
+
+        /* The Fixed Navigation Bar */
+        .version-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999; /* Ensures nav stays on top of iFrame content */
+            padding: 0 20px;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            color: #555;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .nav-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 45px;
+        }
+
+        .nav-btn:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .nav-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+    </style>
 </head>
-<body bgcolor="#000000" text="#00FF00" link="#00FFFF" vlink="#FF00FF" alink="#FFFF00">  <center>
-    <br>
-    <table border="4" cellpadding="12" cellspacing="0" width="760" bgcolor="#111111">
-      <tr>
-        <td align="center">
-          <font face="Courier New, Courier, monospace" size="7" color="#FFFF00">
-            <b>LIBERTY</b>
-          </font>
-          <br>
-          <font face="Arial, Helvetica, sans-serif" size="4" color="#FF0000">
-            <b>WELCOME TO THE OFFICIAL $LIBERTY PAGE</b>
-          </font>
-          <br><br>
-          <marquee behavior="alternate" scrollamount="8" width="90%">
-            <font face="Verdana, Arial, sans-serif" size="4" color="#00FFFF">
-              $LIBERTY IS ONLINE • POWERED BY BUDDYPOND • 1994-2026
-            </font>
-          </marquee>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <font face="Courier New, Courier, monospace" size="4">
-            <b>CONTRACT ADDRESS:</b><br>
-            4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump
-          </font>
-          <br>
-          <hr>
-          <font face="Arial, Helvetica, sans-serif" size="4">
-            <b>LINKS</b>
-          </font>
-          <ul>
-            <li><a href="https://x.com/i/communities/2032866017547006230">X Community</a></li>
-            <li><a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump">$LIBERTY Pumpfun Stream</a></li>
-            <li><a href="https://www.youtube.com/@MarakSquires">Youtube</a></li>
-            <li><a href="http://x.com/marak">X / @marak</a></li>
-            <li><a href="https://meme.marak.com/">Memes</a></li>
-            <li><a href="https://t.me/BuddyPond">Telegram</a></li>
-            <li><a href="http://buddypond.com/discord">Discord</a></li>
-            <li><a href="http://buddybots.ai/">BuddyBots</a></li>
-            <li><a href="http://buddypond.com/">BuddyPond</a></li>
-            <li><a href="http://ares.marak.com/">Ares Trading Bot</a></li>
-          </ul>
-          <p>
-            <font face="Times New Roman, Times, serif" size="5" color="#FFFFFF">
-              <b>Support freedom. Share the memes. Join the pond.</b>
-            </font>
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td align="center">
-          <font face="Courier New, Courier, monospace" size="3" color="#FF66FF">
-            BEST VIEWED ON A COMPUTER SOMEWHERE IN 1998
-          </font>
-        </td>
-      </tr>
-    </table>
-    <br>
-  </center>
+<body>
+
+    <!-- The iFrame where versions will load -->
+    <iframe id="site-frame" src="about:blank"></iframe>
+
+    <!-- The Fixed Navigation Bar -->
+    <nav class="version-nav">
+        <span class="nav-label">SELECT VERSION:</span>
+        <!-- Buttons will be generated by JavaScript based on the config below -->
+    </nav>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        // Edit this array to match your folder structure.
+        // Each object represents a button in the nav.
+        const siteVersions = [
+            { 
+                name: "1", // The number/text on the button
+                path: "marak/index.html" // The relative path to the version's index file
+            },
+            { 
+                name: "2", 
+                path: "make-your-own/index.html" 
+            },
+            { 
+                name: "3", 
+                path: "your-version-here/index.html" 
+            }
+        ];
+        // ==========================================
+
+        const navContainer = document.querySelector('.version-nav');
+        const iframe = document.getElementById('site-frame');
+        const labelElement = document.querySelector('.nav-label');
+        const versionButtons = new Map();
+        const siteParam = 'site';
+
+        function normalizePath(path) {
+            return path.replace(/^\/+/, '');
+        }
+
+        function getIframeSrc(path) {
+            return `/${normalizePath(path)}`;
+        }
+
+        function getPrettyPath(path) {
+            const matchedVersion = siteVersions.find(version => normalizePath(path) === normalizePath(version.path));
+            return matchedVersion ? `/${normalizePath(matchedVersion.path).replace(/(?:^|\/)index\.html$/, '')}` : null;
+        }
+
+        function getPathFromLocation() {
+            const url = new URL(window.location.href);
+            const cleanPath = normalizePath(url.pathname).replace(/\/+$/, '');
+            const matchedVersion = siteVersions.find(version => {
+                const versionPath = normalizePath(version.path).replace(/(?:^|\/)index\.html$/, '');
+                return cleanPath === versionPath;
+            });
+
+            return matchedVersion?.path || url.searchParams.get(siteParam) || siteVersions[0].path;
+        }
+
+        function updateHistory(path, mode = 'push') {
+            const url = new URL(window.location.href);
+            const prettyPath = getPrettyPath(path);
+
+            if (prettyPath) {
+                url.pathname = prettyPath;
+                url.search = '';
+            } else {
+                url.pathname = '/index.html';
+                url.searchParams.set(siteParam, path);
+            }
+
+            window.history[`${mode}State`]({ path }, '', url);
+        }
+
+        function setActiveButton(path) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const matchedVersion = siteVersions.find(version => path.startsWith(version.path.replace(/index\.html$/, '')));
+            const activeButton = matchedVersion ? versionButtons.get(matchedVersion.path) : null;
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
+        // Function to switch the iframe source
+        function switchVersion(path, buttonElement, historyMode = 'push') {
+            // Update iframe source
+            iframe.src = getIframeSrc(path);
+
+            // Update active state styling
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            updateHistory(path, historyMode);
+        }
+
+        // Generate buttons dynamically based on the config array
+        siteVersions.forEach((version, index) => {
+            const button = document.createElement('button');
+            button.classList.add('nav-btn');
+            button.textContent = version.name;
+            versionButtons.set(version.path, button);
+            
+            // Add tooltip for path visibility
+            button.title = `Load: ${version.path}`;
+
+            // Click event listener
+            button.addEventListener('click', function() {
+                switchVersion(version.path, this);
+            });
+
+            // Insert button before the label (so it appears to the right of the label)
+            // Alternatively, use appendChild to put it at the end
+            navContainer.insertBefore(button, labelElement.nextSibling);
+        });
+
+        iframe.addEventListener('load', () => {
+            try {
+                const iframeUrl = new URL(iframe.contentWindow.location.href);
+                const iframePath = `${iframeUrl.pathname.replace(/^\//, '')}${iframeUrl.search}${iframeUrl.hash}`;
+                setActiveButton(iframePath);
+                updateHistory(iframePath, 'replace');
+            } catch (error) {
+                // Ignore cross-origin or inaccessible iframe navigations.
+            }
+        });
+
+        window.addEventListener('popstate', (event) => {
+            const path = event.state?.path || getPathFromLocation();
+            iframe.src = getIframeSrc(path);
+            setActiveButton(path);
+        });
+
+        const initialPath = getPathFromLocation();
+        const initialButton = siteVersions.find(version => initialPath.startsWith(version.path.replace(/index\.html$/, '')))
+            ? versionButtons.get(siteVersions.find(version => initialPath.startsWith(version.path.replace(/index\.html$/, ''))).path)
+            : versionButtons.get(siteVersions[0].path);
+
+        if (initialButton) {
+            initialButton.classList.add('active');
+        }
+        iframe.src = getIframeSrc(initialPath);
+        updateHistory(initialPath, 'replace');
+    </script>
 </body>
 </html>
