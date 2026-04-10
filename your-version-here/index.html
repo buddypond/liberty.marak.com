@@ -1,105 +1,1282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My $LIBERTY Version</title>
-    <style>
-        /* Simple Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$LIBERTY — LIBERTY_OS v1.0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8; /* Very light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  :root {
+    --green: #00ff88;
+    --white: #ffffff;
+    --gray: #888888;
+    --dark-gray: #222222;
+    --border-gray: #333333;
+    --bg: #000000;
+  }
 
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 800px;
-            margin: 40px;
-            padding: 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Courier New', Courier, monospace;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+  /* ── TOP BAR ── */
+  #topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border-gray);
+    font-size: 11px;
+    color: var(--gray);
+    flex-shrink: 0;
+  }
+  #topbar .os-label { color: var(--green); letter-spacing: 1px; font-size: 11px; }
+  #topbar .clock { color: var(--gray); }
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-        }
+  /* ── DESKTOP ── */
+  #desktop {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-y: auto;
+    gap: 32px;
+  }
 
-        /* Placeholder Content Area */
-        .content-area {
-            border: 2px dashed #e0e0e0;
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
+  #logo-area {
+    text-align: center;
+  }
+  #logo-area h1 {
+    font-size: clamp(28px, 6vw, 56px);
+    color: var(--green);
+    letter-spacing: 4px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  #logo-area p {
+    color: var(--gray);
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-top: 6px;
+  }
 
-        .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+  /* ── ICONS ── */
+  #icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    max-width: 600px;
+  }
 
-        /* Credit Footer */
-        .credit-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #888;
-        }
+  .icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease;
+    width: 80px;
+  }
+  .icon:hover { transform: scale(1.08); }
+  .icon:hover .icon-box { border-color: var(--green); box-shadow: 0 0 8px rgba(0,255,136,0.25); }
 
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
+  .icon-box {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border-gray);
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  .icon-label {
+    font-size: 11px;
+    color: var(--gray);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── MODAL BACKDROP ── */
+  #modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #modal-backdrop.open { display: flex; }
+
+  /* ── TERMINAL WINDOW ── */
+  #terminal-window {
+    width: 100%;
+    max-width: 720px;
+    height: min(520px, 80vh);
+    border: 1px solid var(--border-gray);
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.15s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+
+  .term-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-gray);
+    background: #0a0a0a;
+    flex-shrink: 0;
+  }
+  .term-title { font-size: 12px; color: var(--gray); letter-spacing: 1px; }
+  .term-controls { display: flex; gap: 8px; }
+  .term-btn {
+    width: 12px; height: 12px;
+    border: 1px solid var(--border-gray);
+    background: #1a1a1a;
+    cursor: pointer;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray);
+    transition: background 0.1s;
+  }
+  .term-btn:hover { background: var(--border-gray); color: var(--white); }
+  .term-btn.close:hover { background: #550000; }
+
+  #term-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.7;
+    scroll-behavior: smooth;
+  }
+  #term-output::-webkit-scrollbar { width: 4px; }
+  #term-output::-webkit-scrollbar-track { background: #0a0a0a; }
+  #term-output::-webkit-scrollbar-thumb { background: var(--border-gray); }
+
+  .term-line { color: var(--white); white-space: pre-wrap; word-break: break-word; }
+  .term-line.green { color: var(--green); }
+  .term-line.gray { color: var(--gray); }
+  .term-line.prompt { color: var(--green); }
+  .term-line.blank { height: 6px; }
+
+  .term-input-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border-gray);
+    flex-shrink: 0;
+    background: #000;
+    gap: 8px;
+  }
+  .term-prompt-sym { color: var(--green); font-size: 13px; white-space: nowrap; }
+  #term-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    caret-color: var(--green);
+  }
+
+  /* ── INFO MODALS (About, Swarm, Links, Creator) ── */
+  #info-window {
+    width: 100%;
+    max-width: 660px;
+    border: 1px solid var(--border-gray);
+    background: #000;
+    animation: fadeIn 0.15s ease;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-gray);
+    background: #0a0a0a;
+  }
+  .info-title { font-size: 12px; color: var(--gray); letter-spacing: 1px; }
+  .info-close {
+    width: 12px; height: 12px;
+    border: 1px solid var(--border-gray);
+    background: #1a1a1a;
+    cursor: pointer;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray);
+    transition: background 0.1s;
+  }
+  .info-close:hover { background: #550000; color: var(--white); }
+
+  #info-content {
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.8;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  #info-content::-webkit-scrollbar { width: 4px; }
+  #info-content::-webkit-scrollbar-track { background: #0a0a0a; }
+  #info-content::-webkit-scrollbar-thumb { background: var(--border-gray); }
+
+  .info-heading { color: var(--green); font-size: 14px; letter-spacing: 1px; margin-bottom: 10px; }
+  .info-text { color: var(--gray); }
+  .info-highlight { color: var(--white); }
+  .info-link { color: var(--green); text-decoration: none; }
+  .info-link:hover { text-decoration: underline; }
+  .info-row { margin-bottom: 6px; }
+
+  /* ── CA BOX ── */
+  .ca-box {
+    border: 1px solid var(--border-gray);
+    background: #070707;
+    padding: 10px 14px;
+    width: 100%;
+    max-width: 560px;
+  }
+  .ca-box-label { font-size: 10px; color: var(--gray); letter-spacing: 2px; margin-bottom: 6px; }
+  .ca-box-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ca-address {
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.5px;
+    word-break: break-all;
+    flex: 1;
+  }
+  .ca-copy-btn {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border: 1px solid var(--border-gray);
+    background: transparent;
+    color: var(--gray);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: border-color 0.12s, color 0.12s;
+    white-space: nowrap;
+  }
+  .ca-copy-btn:hover { border-color: var(--green); color: var(--green); }
+  .ca-copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+  /* ── LINK CARDS (for links info panel) ── */
+  .link-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-gray);
+    background: #080808;
+    text-decoration: none;
+    transition: border-color 0.15s;
+    cursor: pointer;
+  }
+  .link-card:hover { border-color: var(--green); }
+  .link-card-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+  .link-card-name { color: var(--white); font-size: 12px; display: block; }
+  .link-card-url { color: var(--gray); font-size: 10px; display: block; margin-top: 2px; word-break: break-all; }
+
+  /* ── TASKBAR BATTERY (real feel) ── */
+  #batt-pct { font-size: 10px; color: var(--gray); }
+
+  /* ── (taskbar replaces old footer) ── */
+
+  /* ── BOOT SCREEN (desktop only) ── */
+  #boot-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 999;
+    padding: 40px 48px;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
+  #boot-screen.visible { display: flex; }
+  #boot-screen.fade-out { opacity: 0; pointer-events: none; }
+  .boot-line {
+    font-size: 13px;
+    line-height: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .boot-line.show { opacity: 1; }
+  .boot-line.green { color: var(--green); }
+  .boot-line.gray { color: var(--gray); }
+  .boot-line.white { color: var(--white); }
+  #boot-progress-bar {
+    width: 0%;
+    height: 1px;
+    background: var(--green);
+    margin-top: 24px;
+    transition: width 0.1s linear;
+  }
+
+  /* ── WELCOME MODAL (desktop auto-open) ── */
+  #welcome-window {
+    width: 100%;
+    max-width: 560px;
+    border: 1px solid var(--border-gray);
+    background: #000;
+    animation: fadeIn 0.2s ease;
+  }
+  .welcome-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-gray);
+    background: #0a0a0a;
+  }
+  .welcome-title { font-size: 12px; color: var(--gray); letter-spacing: 1px; }
+  .welcome-close {
+    width: 12px; height: 12px;
+    border: 1px solid var(--border-gray);
+    background: #1a1a1a;
+    cursor: pointer;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray);
+    transition: background 0.1s;
+  }
+  .welcome-close:hover { background: #550000; color: var(--white); }
+  #welcome-body {
+    padding: 22px;
+    font-size: 13px;
+    line-height: 1.85;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  #welcome-body::-webkit-scrollbar { width: 4px; }
+  #welcome-body::-webkit-scrollbar-track { background: #0a0a0a; }
+  #welcome-body::-webkit-scrollbar-thumb { background: var(--border-gray); }
+  .welcome-section { margin-bottom: 18px; }
+  .welcome-section-title { color: var(--green); font-size: 11px; letter-spacing: 2px; margin-bottom: 6px; }
+  .welcome-section p { color: var(--gray); margin-bottom: 4px; }
+  .welcome-section p strong { color: var(--white); font-weight: normal; }
+  .welcome-hint {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-gray);
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .welcome-cta-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .welcome-cta {
+    padding: 7px 16px;
+    border: 1px solid var(--border-gray);
+    background: transparent;
+    color: var(--green);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .welcome-cta:hover { background: #0d0d0d; border-color: var(--green); }
+  .welcome-cta.secondary { color: var(--gray); }
+  .welcome-cta.secondary:hover { color: var(--white); border-color: var(--gray); }
+
+  /* ── DESKTOP HINT ── */
+  #desktop-hint {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+    text-align: center;
+    user-select: none;
+  }
+
+  /* ── TASKBAR (bottom) ── */
+  #taskbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 16px;
+    border-top: 1px solid var(--border-gray);
+    background: #050505;
+    flex-shrink: 0;
+    font-size: 11px;
+  }
+  .taskbar-left { color: var(--gray); display: flex; align-items: center; gap: 14px; }
+  .taskbar-right { display: flex; align-items: center; gap: 12px; color: var(--gray); }
+  .taskbar-icon { font-size: 12px; cursor: default; }
+  .taskbar-signal { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .taskbar-signal span {
+    background: var(--gray);
+    width: 3px;
+    display: block;
+  }
+  .taskbar-signal span:nth-child(1) { height: 4px; }
+  .taskbar-signal span:nth-child(2) { height: 7px; }
+  .taskbar-signal span:nth-child(3) { height: 10px; }
+  .taskbar-signal span:nth-child(4) { height: 12px; opacity: 0.35; }
+  .taskbar-battery { display: flex; align-items: center; gap: 3px; }
+  .battery-body {
+    width: 18px; height: 9px;
+    border: 1px solid var(--gray);
+    position: relative;
+    display: flex; align-items: center;
+  }
+  .battery-fill { width: 65%; height: 5px; background: var(--green); margin-left: 1px; }
+  .battery-cap { width: 2px; height: 5px; background: var(--gray); }
+
+  /* ── MOBILE NAVIGATION CARDS ── */
+  #mobile-nav {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .mobile-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-gray);
+    background: #060606;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    user-select: none;
+  }
+  .mobile-card:hover, .mobile-card:active { border-color: var(--green); }
+  .mobile-card-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+  .mobile-card-label { color: var(--white); font-size: 13px; }
+  .mobile-card-desc { color: var(--gray); font-size: 11px; margin-top: 2px; }
+  .mobile-card-arrow { margin-left: auto; color: var(--green); font-size: 14px; }
+
+  /* ── MOBILE WELCOME STRIP ── */
+  #mobile-welcome {
+    display: none;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--border-gray);
+    background: #060606;
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  #mobile-welcome .mw-title { color: var(--green); letter-spacing: 1px; margin-bottom: 10px; font-size: 13px; }
+  #mobile-welcome p { color: var(--gray); margin-bottom: 5px; }
+  #mobile-welcome strong { color: var(--white); font-weight: normal; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    #boot-screen { display: none !important; }
+    #desktop-hint { display: none; }
+    #icons { display: none; }
+    #mobile-nav { display: flex; }
+    #mobile-welcome { display: block; }
+    #taskbar .taskbar-left .os-status { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    #terminal-window { height: 85vh; }
+    .icon { width: 68px; }
+    .icon-box { width: 50px; height: 50px; font-size: 20px; }
+    #logo-area h1 { letter-spacing: 2px; }
+    #term-output { font-size: 12px; }
+    #term-input { font-size: 12px; }
+    body { overflow-y: auto; }
+    #desktop { justify-content: flex-start; padding-top: 20px; }
+    #logo-area h1 { font-size: 32px; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Section -->
-        <h1>$LIBERTY</h1>
-        <p>Version [Your Version Name Here]</p>
+<!-- BOOT SCREEN (desktop only) -->
+<div id="boot-screen">
+  <div style="color:var(--gray);font-size:10px;letter-spacing:2px;margin-bottom:28px;">LIBERTY_OS v1.0 — BIOS 2.4.1</div>
+  <div id="boot-lines"></div>
+  <div id="boot-progress-bar"></div>
+</div>
 
-        <!-- Main Content Placeholder -->
-        <div class="content-area">
-            <p class="placeholder-text">
-                "Your content goes here.<br>
-                Replace this box with your amazing design, memes, and links."
-            </p>
-        </div>
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="os-label">LIBERTY_OS v1.0</span>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span style="color:#444;font-size:10px;letter-spacing:1px;" class="os-status">TRUST_LAYER: ONLINE</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</div>
 
-        <!-- Credit / Portfolio Section -->
-        <div class="credit-footer">
-            <p>Created by: <a href="#">[Your Name / Portfolio Link]</a></p>
-            <p>Contract: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</p>
-        </div>
+<!-- DESKTOP -->
+<div id="desktop">
+  <div id="logo-area">
+    <h1>$LIBERTY</h1>
+    <p>TRUST-BASED AI SWARM TOKEN · SOLANA</p>
+  </div>
+
+  <!-- Contract Address Box (always visible) -->
+  <div class="ca-box" id="desktop-ca">
+    <div class="ca-box-label">CONTRACT ADDRESS (SOLANA)</div>
+    <div class="ca-box-inner">
+      <span class="ca-address" id="ca-text-desktop">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span>
+      <button class="ca-copy-btn" onclick="copyCA('ca-text-desktop', this)">COPY</button>
     </div>
+  </div>
 
+  <!-- Mobile welcome strip (hidden on desktop) -->
+  <div id="mobile-welcome">
+    <div class="mw-title">// WELCOME TO $LIBERTY</div>
+    <p><strong>$LIBERTY</strong> is a Solana-based utility token powering Marak Squires' AI ecosystem.</p>
+    <p>Your <strong>token balance = trust level</strong> — more tokens means AI agents prioritize your requests.</p>
+    <p>Built on real open-source tools: BuddyPond, BuddyBots AI swarm, and the Memeplex engine.</p>
+    <div style="margin-top:12px;border:1px solid var(--border-gray);background:#050505;padding:10px;">
+      <div style="font-size:10px;color:var(--gray);letter-spacing:2px;margin-bottom:6px;">CONTRACT ADDRESS</div>
+      <div style="font-size:10px;color:var(--green);word-break:break-all;margin-bottom:8px;" id="ca-text-mobile">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</div>
+      <button class="ca-copy-btn" style="width:100%;text-align:center;" onclick="copyCA('ca-text-mobile', this)">COPY CA</button>
+    </div>
+    <p style="margin-top:8px;color:#555;font-size:11px;">Use the buttons below to explore.</p>
+  </div>
+
+  <!-- Desktop icons (hidden on mobile) -->
+  <div id="icons">
+    <div class="icon" onclick="openTerminal()">
+      <div class="icon-box">&#x276F;_</div>
+      <span class="icon-label">Terminal</span>
+    </div>
+    <div class="icon" onclick="openInfo('about')">
+      <div class="icon-box">&#x24D8;</div>
+      <span class="icon-label">About</span>
+    </div>
+    <div class="icon" onclick="openInfo('swarm')">
+      <div class="icon-box">&#x2737;</div>
+      <span class="icon-label">Swarm</span>
+    </div>
+    <div class="icon" onclick="openInfo('links')">
+      <div class="icon-box">&#x2197;</div>
+      <span class="icon-label">Links</span>
+    </div>
+    <div class="icon" onclick="openInfo('creator')">
+      <div class="icon-box">&#x2605;</div>
+      <span class="icon-label">Creator</span>
+    </div>
+  </div>
+
+  <!-- Mobile navigation cards (hidden on desktop) -->
+  <div id="mobile-nav">
+    <div class="mobile-card" onclick="openTerminal()">
+      <div class="mobile-card-icon">&#x276F;_</div>
+      <div>
+        <div class="mobile-card-label">Terminal</div>
+        <div class="mobile-card-desc">Run commands, explore $LIBERTY</div>
+      </div>
+      <div class="mobile-card-arrow">›</div>
+    </div>
+    <div class="mobile-card" onclick="openInfo('about')">
+      <div class="mobile-card-icon">&#x24D8;</div>
+      <div>
+        <div class="mobile-card-label">About</div>
+        <div class="mobile-card-desc">What is $LIBERTY?</div>
+      </div>
+      <div class="mobile-card-arrow">›</div>
+    </div>
+    <div class="mobile-card" onclick="openInfo('swarm')">
+      <div class="mobile-card-icon">&#x2737;</div>
+      <div>
+        <div class="mobile-card-label">Swarm</div>
+        <div class="mobile-card-desc">How the AI network works</div>
+      </div>
+      <div class="mobile-card-arrow">›</div>
+    </div>
+    <div class="mobile-card" onclick="openInfo('links')">
+      <div class="mobile-card-icon">&#x2197;</div>
+      <div>
+        <div class="mobile-card-label">Links</div>
+        <div class="mobile-card-desc">Twitter, Docs, Website</div>
+      </div>
+      <div class="mobile-card-arrow">›</div>
+    </div>
+    <div class="mobile-card" onclick="openInfo('creator')">
+      <div class="mobile-card-icon">&#x2605;</div>
+      <div>
+        <div class="mobile-card-label">Creator</div>
+        <div class="mobile-card-desc">Built by Variant</div>
+      </div>
+      <div class="mobile-card-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- Desktop hint (hidden on mobile) -->
+  <div id="desktop-hint">click icons to explore &nbsp;·&nbsp; open terminal for commands</div>
+</div>
+
+<!-- TASKBAR (bottom) -->
+<div id="taskbar">
+  <div class="taskbar-left">
+    <span style="color:var(--green);letter-spacing:1px;">$LIBERTY</span>
+    <span class="os-status" style="color:#444;">nodes: 12 online</span>
+  </div>
+  <div class="taskbar-right">
+    <span style="color:#444;font-size:10px;letter-spacing:1px;" class="os-status">SOL</span>
+    <div class="taskbar-signal" title="Network signal">
+      <span></span><span></span><span></span><span id="sig-bar4" style="opacity:0.25;"></span>
+    </div>
+    <div class="taskbar-battery" title="Battery">
+      <div class="battery-body"><div class="battery-fill" id="batt-fill"></div></div>
+      <div class="battery-cap"></div>
+    </div>
+    <span id="batt-pct">—%</span>
+    <span id="taskbar-clock" style="color:var(--gray);">--:--</span>
+  </div>
+</div>
+
+<!-- MODAL BACKDROP -->
+<div id="modal-backdrop" onclick="handleBackdropClick(event)">
+
+  <!-- WELCOME WINDOW (auto-opens on desktop first visit) -->
+  <div id="welcome-window" style="display:none;">
+    <div class="welcome-titlebar">
+      <span class="welcome-title">welcome / first run</span>
+      <div class="welcome-close" onclick="closeWelcome()">x</div>
+    </div>
+    <div id="welcome-body">
+      <div class="welcome-section">
+        <div class="welcome-section-title">// WHAT IS $LIBERTY?</div>
+        <p><strong>$LIBERTY</strong> is a decentralized AI coordination token.</p>
+        <p>It replaces centralized control with a <strong>trust layer</strong> — your token balance determines how much influence you have over AI agents in the swarm.</p>
+      </div>
+      <div class="welcome-section">
+        <div class="welcome-section-title">// WHAT IS AN AI SWARM?</div>
+        <p>A <strong>swarm</strong> is a network of AI agents working in parallel — each specializing in a task. They coordinate without a central controller.</p>
+        <p>Think of it as a hive: no queen gives orders, yet the system solves complex problems together.</p>
+      </div>
+      <div class="welcome-section">
+        <div class="welcome-section-title">// HOW DOES TRUST WORK?</div>
+        <p>Each agent reads your wallet's <strong>$LIBERTY balance</strong> before processing your request.</p>
+        <p>More tokens = higher trust tier = priority routing, richer outputs, and faster responses.</p>
+        <p>Low-trust requests are queued or rate-limited. <strong>Trust is earned, not granted.</strong></p>
+      </div>
+      <div class="welcome-cta-row">
+        <button class="welcome-cta" onclick="closeWelcome(); openTerminal();">open terminal ›</button>
+        <button class="welcome-cta secondary" onclick="closeWelcome()">explore desktop</button>
+      </div>
+      <div class="welcome-hint">esc or click outside to close &nbsp;·&nbsp; type `help` in terminal for commands</div>
+    </div>
+  </div>
+
+  <!-- TERMINAL WINDOW -->
+  <div id="terminal-window" style="display:none;">
+    <div class="term-titlebar">
+      <span class="term-title">liberty@swarm ~ terminal</span>
+      <div class="term-controls">
+        <div class="term-btn close" onclick="closeAll()" title="Close">x</div>
+      </div>
+    </div>
+    <div id="term-output"></div>
+    <div class="term-input-row">
+      <span class="term-prompt-sym">liberty@swarm:~$</span>
+      <input id="term-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
+    </div>
+  </div>
+
+  <!-- INFO WINDOW -->
+  <div id="info-window" style="display:none;">
+    <div class="info-titlebar">
+      <span class="info-title" id="info-title-text">—</span>
+      <div class="info-close" onclick="closeAll()">x</div>
+    </div>
+    <div id="info-content"></div>
+  </div>
+
+</div>
+
+<script>
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const timeStr = h+':'+m+':'+s;
+  const shortTime = h+':'+m;
+  const el = document.getElementById('clock');
+  const tb = document.getElementById('taskbar-clock');
+  if (el) el.textContent = timeStr;
+  if (tb) tb.textContent = shortTime;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── BOOT SEQUENCE (desktop only) ──
+const BOOT_SEQUENCE = [
+  { text: 'LIBERTY_OS v1.0 — initializing...', cls: 'green' },
+  { text: 'CPU: trust_core @ 3.2GHz  |  MEM: 512T OK', cls: 'gray' },
+  { text: 'loading kernel modules...', cls: 'gray' },
+  { text: 'connecting to AI swarm network...', cls: 'gray' },
+  { text: 'swarm nodes detected: 12 active', cls: 'white' },
+  { text: 'verifying trust layer integrity...', cls: 'gray' },
+  { text: 'trust registry: synchronized', cls: 'white' },
+  { text: 'loading token registry...', cls: 'gray' },
+  { text: 'token registry: online', cls: 'white' },
+  { text: 'mounting user interface...', cls: 'gray' },
+  { text: '──────────────────────────────────────────', cls: 'gray' },
+  { text: 'ACCESS GRANTED.', cls: 'green' },
+];
+
+function runBootScreen() {
+  if (window.innerWidth <= 768) return;
+  const screen = document.getElementById('boot-screen');
+  const container = document.getElementById('boot-lines');
+  const bar = document.getElementById('boot-progress-bar');
+  screen.classList.add('visible');
+
+  let i = 0;
+  const total = BOOT_SEQUENCE.length;
+  const interval = 160;
+
+  function showNext() {
+    if (i >= total) {
+      setTimeout(() => {
+        screen.classList.add('fade-out');
+        setTimeout(() => {
+          screen.classList.remove('visible');
+          screen.classList.remove('fade-out');
+          // Show welcome on first desktop visit
+          if (!sessionStorage.getItem('liberty_welcomed')) {
+            openWelcome();
+          }
+        }, 650);
+      }, 400);
+      return;
+    }
+    const line = BOOT_SEQUENCE[i];
+    const div = document.createElement('div');
+    div.className = 'boot-line ' + (line.cls || '');
+    div.textContent = line.text;
+    container.appendChild(div);
+    requestAnimationFrame(() => { div.classList.add('show'); });
+    bar.style.width = Math.round(((i + 1) / total) * 100) + '%';
+    i++;
+    setTimeout(showNext, interval);
+  }
+  showNext();
+}
+
+// ── WELCOME MODAL ──
+function openWelcome() {
+  const backdrop = document.getElementById('modal-backdrop');
+  const welcome = document.getElementById('welcome-window');
+  const terminal = document.getElementById('terminal-window');
+  const info = document.getElementById('info-window');
+  backdrop.classList.add('open');
+  welcome.style.display = 'block';
+  terminal.style.display = 'none';
+  info.style.display = 'none';
+}
+
+function closeWelcome() {
+  sessionStorage.setItem('liberty_welcomed', '1');
+  const welcome = document.getElementById('welcome-window');
+  welcome.style.display = 'none';
+  const backdrop = document.getElementById('modal-backdrop');
+  // Only close backdrop if nothing else is open
+  const terminal = document.getElementById('terminal-window');
+  const info = document.getElementById('info-window');
+  if (terminal.style.display === 'none' && info.style.display === 'none') {
+    backdrop.classList.remove('open');
+  }
+}
+
+window.addEventListener('load', () => {
+  runBootScreen();
+  // On desktop, if no boot (e.g. narrow window that later resizes), still check welcome
+  if (window.innerWidth <= 768 && !sessionStorage.getItem('liberty_welcomed')) {
+    sessionStorage.setItem('liberty_welcomed', '1'); // mobile: don't show desktop welcome
+  }
+});
+
+
+// ── MODAL CONTROL ──
+function openTerminal() {
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('terminal-window').style.display = 'flex';
+  document.getElementById('info-window').style.display = 'none';
+  document.getElementById('welcome-window').style.display = 'none';
+  if (!termInitialized) initTerminal();
+  setTimeout(() => document.getElementById('term-input').focus(), 100);
+}
+
+function openInfo(section) {
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('info-window').style.display = 'block';
+  document.getElementById('terminal-window').style.display = 'none';
+  document.getElementById('welcome-window').style.display = 'none';
+  renderInfo(section);
+}
+
+function closeAll() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  document.getElementById('terminal-window').style.display = 'none';
+  document.getElementById('info-window').style.display = 'none';
+  document.getElementById('welcome-window').style.display = 'none';
+  sessionStorage.setItem('liberty_welcomed', '1');
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('modal-backdrop')) closeAll();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAll();
+});
+
+// ── INFO PANELS ──
+const CA = '4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump';
+function caBoxHTML(id) {
+  return `
+    <div class="ca-box" style="margin-top:16px;margin-bottom:4px;">
+      <div class="ca-box-label">CONTRACT ADDRESS (SOLANA)</div>
+      <div class="ca-box-inner">
+        <span class="ca-address" id="${id}">${CA}</span>
+        <button class="ca-copy-btn" onclick="copyCA('${id}', this)">COPY</button>
+      </div>
+    </div>`;
+}
+
+const infoData = {
+  about: {
+    title: 'about / $liberty',
+    html: `
+      <div class="info-heading">// WHAT IS $LIBERTY?</div>
+      <div class="info-row info-text"><span class="info-highlight">$LIBERTY</span> is a Solana-based utility memecoin and trust token, launched via pump.fun and now steered by open-source veteran <span class="info-highlight">Marak Squires</span> (@marak). It is not a generic hype coin — it is the economic and trust layer powering Marak's real-world AI and open-source ecosystem.</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// THE BUILDER BEHIND IT</div>
+      <div class="info-row info-text">Marak is one of the early Node.js contributors (#11) and creator of <span class="info-highlight">faker.js</span> — a library used by millions of developers worldwide with trillions of dollars in indirect economic impact. He rapped every Node.js module name live at JSConf 2011. He has MIT Media Lab ties, faced FBI subpoenas (they found "dank memes"), survived a devastating apartment fire, and kept building. $LIBERTY gives him a runway to release 4+ years of internal tools.</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// THE SEIZURE — MARCH 2026</div>
+      <div class="info-row info-text">The OG dev team was discovered to be hiding ~30% of supply in distributed wallets and slowly dumping. Marak publicly seized control: dumped his own SOL at a ~50% loss as a commitment signal, migrated to a new contract (below), locked 22% of dev allocation for 12 months ("diamond gloves"), and rebuilt the community under his direct admin. His words: <span class="info-highlight">"I had no other option but to SEIZE $LIBERTY for myself and FOR ALL OF YOU!!!"</span></div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// TWO FLAGSHIP PLATFORMS</div>
+      <div class="info-row info-text">&#x2023; <span class="info-highlight">BuddyPond</span> (buddypond.com) — A full Cloud OS + Instant Messenger + social network. Developers embed it via a single &lt;script&gt; tag. Serverless, edge-first.</div>
+      <div class="info-row info-text">&#x2023; <span class="info-highlight">BuddyBots</span> (buddybots.ai) — A swarm of 99+ always-on AI agents living inside BuddyPond. They respond to posts, generate content, and "meme on humans" using contextual intelligence.</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// THE MEMEPLEX ENGINE</div>
+      <div class="info-row info-text">The <span class="info-highlight">Memeplex Traversal Algorithm (MTA / Mnemosyne)</span> finds the most contextually relevant memes for any query using Levenshtein Distance + Jaro-Winkler string similarity. Running in production at BuddyPond since 2022. Once fully open-sourced, it plugs into BuddyBots so agents can reply to any post with the perfect meme — "memeing on humans, hard."</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// TRUST MODEL</div>
+      <div class="info-row info-text">&#x2023; Token balance = on-chain reputation signal</div>
+      <div class="info-row info-text">&#x2023; AI agents query your wallet before processing requests</div>
+      <div class="info-row info-text">&#x2023; Higher balance → higher trust tier → priority routing + richer output</div>
+      <div class="info-row info-text">&#x2023; Low-trust requests are rate-limited or queued</div>
+      <div class="info-row info-text">&#x2023; Honors Aaron Swartz + Saint Terry A. Davis — builders and truth-tellers</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// PHILOSOPHY</div>
+      <div class="info-row info-text">Substance over noise. Real builders. Technical liberty. Open-source revival. The "most fun and creative place in the known universe." Marak openly live-codes on pump.fun and X, acts as both dev and community admin, and drops OSS tools funded by $LIBERTY runway.</div>
+      ${caBoxHTML('ca-about')}
+    `
+  },
+  swarm: {
+    title: 'swarm / buddybots ai',
+    html: `
+      <div class="info-heading">// THE SWARM</div>
+      <div class="info-row info-text">A <span class="info-highlight">swarm</span> is a network of autonomous AI agents that coordinate to complete tasks — no single controller, emergent intelligence. BuddyBots is Marak's live implementation: 99+ agents operating inside BuddyPond 24/7.</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// HOW $LIBERTY POWERS THE SWARM</div>
+      <div class="info-row info-text">&#x2023; Each agent reads your $LIBERTY wallet balance before acting</div>
+      <div class="info-row info-text">&#x2023; Balance maps to a trust tier — higher tier = priority in the queue</div>
+      <div class="info-row info-text">&#x2023; Agents share a common trust graph — reputation is network-wide</div>
+      <div class="info-row info-text">&#x2023; Low-trust wallets get rate-limited or deprioritized</div>
+      <div class="info-row info-text">&#x2023; The MTA algorithm arms agents with contextual memes instantly</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// BUDDYBOTS CAPABILITIES</div>
+      <div class="info-row info-text">&#x2023; Respond to posts with contextually correct memes</div>
+      <div class="info-row info-text">&#x2023; Generate content inside BuddyPond and on X</div>
+      <div class="info-row info-text">&#x2023; Operate via BuddyPond SDK — embeddable anywhere</div>
+      <div class="info-row info-text">&#x2023; Scale horizontally as demand increases</div>
+      <div class="info-blank" style="height:14px"></div>
+
+      <div class="info-heading">// STATUS</div>
+      <div class="info-row"><span class="info-highlight">ACTIVE</span> <span class="info-text">— BuddyBots swarm live · MTA in production since 2022 · OSS release pending</span></div>
+      ${caBoxHTML('ca-swarm')}
+    `
+  },
+  links: {
+    title: 'links / community',
+    html: `
+      <div class="info-heading">// OFFICIAL LINKS</div>
+      <div class="link-card-grid">
+        <a class="link-card" href="https://x.com/marak" target="_blank">
+          <div class="link-card-icon">&#x1D54F;</div>
+          <div>
+            <span class="link-card-name">X / Twitter</span>
+            <span class="link-card-url">@marak</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank">
+          <div class="link-card-icon">&#x1F4B8;</div>
+          <div>
+            <span class="link-card-name">Pump.fun</span>
+            <span class="link-card-url">$LIBERTY token page</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://www.youtube.com/@MarakSquires" target="_blank">
+          <div class="link-card-icon">&#x25B6;</div>
+          <div>
+            <span class="link-card-name">YouTube</span>
+            <span class="link-card-url">@MarakSquires</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://buddybots.ai/" target="_blank">
+          <div class="link-card-icon">&#x2737;</div>
+          <div>
+            <span class="link-card-name">BuddyBots</span>
+            <span class="link-card-url">buddybots.ai</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://buddypond.com/" target="_blank">
+          <div class="link-card-icon">&#x2601;</div>
+          <div>
+            <span class="link-card-name">BuddyPond</span>
+            <span class="link-card-url">buddypond.com</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://marak.com/" target="_blank">
+          <div class="link-card-icon">&#x2605;</div>
+          <div>
+            <span class="link-card-name">Marak's Site</span>
+            <span class="link-card-url">marak.com</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://discord.com/invite/s7vrhN4grW" target="_blank">
+          <div class="link-card-icon">&#x2302;</div>
+          <div>
+            <span class="link-card-name">Discord</span>
+            <span class="link-card-url">Community server</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://x.com/i/communities/2032866017547006230" target="_blank">
+          <div class="link-card-icon">&#x25CE;</div>
+          <div>
+            <span class="link-card-name">X Community</span>
+            <span class="link-card-url">$LIBERTY group</span>
+          </div>
+        </a>
+        <a class="link-card" href="https://liberty.marak.com" target="_blank">
+          <div class="link-card-icon">&#x2690;</div>
+          <div>
+            <span class="link-card-name">Project Hub</span>
+            <span class="link-card-url">liberty.marak.com</span>
+          </div>
+        </a>
+      </div>
+      ${caBoxHTML('ca-links')}
+      <div style="margin-top:10px;color:#444;font-size:10px;letter-spacing:0.5px;">Always verify the contract address from official sources only.</div>
+    `
+  },
+  creator: {
+    title: 'creator / variant',
+    html: `
+      <div class="info-heading">// BUILT BY</div>
+      <div class="info-row"><span class="info-highlight">Variant</span></div>
+      <div class="info-row info-text">Frontend Developer</div>
+      <div class="info-blank" style="height:12px"></div>
+      <div class="info-heading">// PORTFOLIO</div>
+      <div class="info-row">
+        <a class="info-link" href="https://x.com/TheVarian_t" target="_blank">https://x.com/TheVarian_t</a>
+      </div>
+      <div class="info-blank" style="height:12px"></div>
+      <div class="info-heading">// STACK</div>
+      <div class="info-row info-text">&#x2023; Vanilla HTML / CSS / JS</div>
+  
+      <div class="info-row info-text">&#x2023; Terminal-first OS aesthetic</div>
+      ${caBoxHTML('ca-creator')}
+    `
+  }
+};
+
+function renderInfo(section) {
+  const data = infoData[section];
+  document.getElementById('info-title-text').textContent = data.title;
+  document.getElementById('info-content').innerHTML = data.html;
+}
+
+// ── TERMINAL ──
+let termInitialized = false;
+const output = document.getElementById('term-output');
+const input = document.getElementById('term-input');
+
+function println(text, cls = '') {
+  const div = document.createElement('div');
+  div.className = 'term-line' + (cls ? ' ' + cls : '');
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+function printBlank() {
+  const div = document.createElement('div');
+  div.className = 'term-line blank';
+  output.appendChild(div);
+}
+
+function printRaw(html) {
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  div.innerHTML = html;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+const BOOT_LINES = [
+  { text: 'LIBERTY_OS v1.0 — booting...', cls: 'green' },
+  { text: 'loading trust kernel...', cls: 'gray' },
+  { text: 'swarm nodes: connected', cls: 'gray' },
+  { text: 'token registry: online', cls: 'gray' },
+  { text: '──────────────────────────────────────────', cls: 'gray' },
+  { text: 'welcome to $LIBERTY terminal.', cls: 'green' },
+  { text: 'type `help` to list available commands.', cls: 'gray' },
+  { text: '──────────────────────────────────────────', cls: 'gray' },
+];
+
+function initTerminal() {
+  termInitialized = true;
+  let i = 0;
+  function nextLine() {
+    if (i < BOOT_LINES.length) {
+      const l = BOOT_LINES[i++];
+      println(l.text, l.cls);
+      setTimeout(nextLine, 80);
+    }
+  }
+  nextLine();
+}
+
+const COMMANDS = {
+  help: () => {
+    printBlank();
+    println('available commands:', 'green');
+    const cmds = [
+      ['help',    'list all commands'],
+      ['about',   'what is $LIBERTY + Marak\'s story'],
+      ['trust',   'explain trust model'],
+      ['swarm',   'BuddyBots AI swarm'],
+      ['ca',      'show contract address'],
+      ['links',   'all official links'],
+      ['creator', 'who built this site'],
+      ['clear',   'clear terminal'],
+    ];
+    cmds.forEach(([cmd, desc]) => {
+      printRaw(`<span style="color:#00ff88;min-width:90px;display:inline-block">${cmd}</span><span style="color:#888"> — ${desc}</span>`);
+    });
+    printBlank();
+  },
+  about: () => {
+    printBlank();
+    println('// $LIBERTY', 'green');
+    println('Solana-based utility memecoin and trust layer by Marak Squires (@marak).');
+    println('Creator of faker.js • Early Node.js contributor (#11).');
+    printBlank();
+    
+    println('Powers the BuddyPond ecosystem:', 'gray');
+    println('  • BuddyPond  — Serverless Cloud OS, messenger & embeddable app platform');
+    println('  • BuddyBots  — 99+ AI agents powered by the Memeplex Traversal Algorithm');
+    println('  • Memeplexes — Advanced meme discovery & management tools');
+    printBlank();
+
+    println('Born from open-source legacy and internet freedom values.', 'gray');
+    println('Seized from bad-actor devs in March 2026 for the community.', 'gray');
+    println('22% dev allocation locked for 12 months — Diamond gloves.', 'gray');
+    printBlank();
+
+    println('CA: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump', 'green');
+    printBlank();
+    
+    println('type `trust` or `swarm` for deeper details.', 'gray');
+    printBlank();
+  },
+  trust: () => {
+    printBlank();
+    println('// TRUST MODEL', 'green');
+    println('Token = reputation. Reputation = access.');
+    printBlank();
+    println('HOW IT WORKS:', 'gray');
+    println('  1. Agent reads your wallet balance');
+    println('  2. Maps balance to a trust tier (0–100)');
+    println('  3. High trust → priority queue, richer output');
+    println('  4. Low trust → rate-limited or queued');
+    printBlank();
+    println('Trust is earned. Not given.', 'gray');
+    printBlank();
+  },
+  swarm: () => {
+    printBlank();
+    println('// AI SWARM — BUDDYBOTS', 'green');
+    println('99+ AI agents operating inside BuddyPond, 24/7.');
+    println('No central controller. Emergent coordination.');
+    printBlank();
+    println('SWARM PROPERTIES:', 'gray');
+    println('  — each agent reads your $LIBERTY balance first');
+    println('  — higher balance → higher trust tier → priority');
+    println('  — agents share a trust graph network-wide');
+    println('  — MTA (Memeplex Traversal Algorithm) powers meme replies');
+    println('  — Levenshtein + Jaro-Winkler similarity in prod since 2022');
+    printBlank();
+    println('Marak calls it: "memeing on humans, hard."', 'gray');
+    printBlank();
+    println('STATUS: BuddyBots live · MTA production · OSS release soon', 'green');
+    printBlank();
+  },
+  links: () => {
+    printBlank();
+    println('// OFFICIAL LINKS', 'green');
+    printRaw(`<span style="color:#888">X / Twitter   — </span><a href="https://x.com/marak" target="_blank" style="color:#00ff88;text-decoration:none">https://x.com/marak</a>`);
+    printRaw(`<span style="color:#888">Pump.fun      — </span><a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" style="color:#00ff88;text-decoration:none">pump.fun/coin/4GKTT...pump</a>`);
+    printRaw(`<span style="color:#888">YouTube       — </span><a href="https://www.youtube.com/@MarakSquires" target="_blank" style="color:#00ff88;text-decoration:none">youtube.com/@MarakSquires</a>`);
+    printRaw(`<span style="color:#888">BuddyBots     — </span><a href="https://buddybots.ai/" target="_blank" style="color:#00ff88;text-decoration:none">https://buddybots.ai</a>`);
+    printRaw(`<span style="color:#888">BuddyPond     — </span><a href="https://buddypond.com/" target="_blank" style="color:#00ff88;text-decoration:none">https://buddypond.com</a>`);
+    printRaw(`<span style="color:#888">Marak's site  — </span><a href="https://marak.com/" target="_blank" style="color:#00ff88;text-decoration:none">https://marak.com</a>`);
+    printRaw(`<span style="color:#888">Discord       — </span><a href="https://discord.com/invite/s7vrhN4grW" target="_blank" style="color:#00ff88;text-decoration:none">discord.com/invite/s7vrhN4grW</a>`);
+    printRaw(`<span style="color:#888">Project Hub   — </span><a href="https://liberty.marak.com" target="_blank" style="color:#00ff88;text-decoration:none">liberty.marak.com</a>`);
+    printBlank();
+    println('CA: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump', 'green');
+    println('verify all addresses from official sources only.', 'gray');
+    printBlank();
+  },
+  creator: () => {
+    printBlank();
+    println('// CREATOR', 'green');
+    println('Built by Variant');
+    println('Frontend Developer', 'gray');
+    printBlank();
+    printRaw(`<span style="color:#888">Socials — </span><a href="https://x.com/TheVarian_t" target="_blank" style="color:#00ff88;text-decoration:none">https://x.com/TheVarian_t</a>`);
+    printBlank();
+    println('stack: vanilla HTML / CSS / JS / React.', 'gray');
+    printBlank();
+  },
+  ca: () => {
+    printBlank();
+    println('// CONTRACT ADDRESS (SOLANA)', 'green');
+    println('4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump', 'white');
+    printBlank();
+    println('current CA — managed directly by Marak Squires.', 'gray');
+    println('verify from official sources: liberty.marak.com', 'gray');
+    println('pump.fun: pump.fun/coin/4GKTT...pump', 'gray');
+    printBlank();
+  },
+  clear: () => {
+    output.innerHTML = '';
+  }
+};
+
+// ── COPY CA ──
+function copyCA(elId, btn) {
+  const text = document.getElementById(elId).textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = elId.includes('mobile') ? 'COPY CA' : 'COPY'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    btn.textContent = 'ERR';
+    setTimeout(() => { btn.textContent = 'COPY'; }, 2000);
+  });
+}
+
+// ── BATTERY API ──
+async function initBattery() {
+  if (!navigator.getBattery) return;
+  try {
+    const batt = await navigator.getBattery();
+    function updateBatt() {
+      const pct = Math.round(batt.level * 100);
+      const fill = document.getElementById('batt-fill');
+      const pctEl = document.getElementById('batt-pct');
+      if (fill) fill.style.width = Math.max(5, pct) + '%';
+      if (pctEl) {
+        pctEl.textContent = pct + '%';
+        pctEl.style.color = pct < 20 ? '#ff4444' : pct < 50 ? '#ffaa00' : '#888';
+      }
+      if (fill) fill.style.background = pct < 20 ? '#ff4444' : pct < 50 ? '#ffaa00' : 'var(--green)';
+    }
+    updateBatt();
+    batt.addEventListener('levelchange', updateBatt);
+    batt.addEventListener('chargingchange', updateBatt);
+  } catch(e) {}
+}
+initBattery();
+
+function runCommand(raw) {
+  const cmd = raw.trim().toLowerCase();
+  printBlank();
+  println('liberty@swarm:~$ ' + raw, 'prompt');
+  printBlank();
+
+  if (!cmd) return;
+  if (COMMANDS[cmd]) {
+    COMMANDS[cmd]();
+  } else {
+    println(`command not found: ${cmd}`, 'gray');
+    println('type `help` to see available commands.', 'gray');
+    printBlank();
+  }
+}
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const val = input.value;
+    input.value = '';
+    runCommand(val);
+    output.scrollTop = output.scrollHeight;
+  }
+});
+
+// Re-focus input when clicking inside terminal
+document.getElementById('terminal-window').addEventListener('click', () => {
+  input.focus();
+});
+</script>
 </body>
 </html>
+
