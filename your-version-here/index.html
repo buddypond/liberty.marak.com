@@ -1,105 +1,902 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My $LIBERTY Version</title>
-    <style>
-        /* Simple Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$LIBERTY — Freedom On-Chain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --void:   #0A0A12;
+      --abyss:  #14141F;
+      --cyan:   #00F4E8;
+      --purple: #9F4BFF;
+      --white:  #F8F8FF;
+      --frost:  #A8B0C0;
+      --grad:   linear-gradient(90deg, #00F4E8, #9F4BFF);
+      --grad135:linear-gradient(135deg, #00F4E8 0%, #9F4BFF 100%);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--void);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    ::selection { background: rgba(159,75,255,.35); color: var(--white); }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8; /* Very light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    /* CURSOR */
+    #cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--cyan);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .35s, height .35s, border-color .35s;
+      mix-blend-mode: difference;
+    }
+    #cursor-dot {
+      width: 5px; height: 5px;
+      background: var(--cyan);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    a:hover ~ #cursor-ring, button:hover ~ #cursor-ring { width: 60px; height: 60px; }
 
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 800px;
-            margin: 40px;
-            padding: 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+    /* CANVAS */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .6;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+    /* SCANLINES */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
+    }
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-        }
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(var(--cyan), var(--purple)); border-radius: 4px; }
 
-        /* Placeholder Content Area */
-        .content-area {
-            border: 2px dashed #e0e0e0;
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 56px;
+      transition: padding .3s, background .4s, backdrop-filter .4s;
+    }
+    nav.scrolled {
+      padding: 14px 56px;
+      background: rgba(10,10,18,.75);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(0,244,232,.06);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: .08em;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      color: var(--frost); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+      font-weight: 500; text-decoration: none; transition: color .25s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -4px;
+      width: 0; height: 1px; background: var(--grad); transition: width .3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      padding: 9px 24px; border-radius: 50px;
+      border: 1px solid var(--cyan); background: transparent;
+      color: var(--cyan); font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+      text-decoration: none; cursor: none;
+      transition: background .25s, color .25s, box-shadow .25s;
+    }
+    .nav-cta:hover {
+      background: var(--cyan); color: var(--void);
+      box-shadow: 0 0 40px -8px var(--cyan);
+    }
 
-        .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+    /* MAIN */
+    main { position: relative; z-index: 2; }
 
-        /* Credit Footer */
-        .credit-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #888;
-        }
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 24px 100px;
+      position: relative; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); pointer-events: none;
+      animation: orb-float 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 520px; height: 520px; background: rgba(0,244,232,.065); top: -140px; left: -160px; }
+    .orb-2 { width: 580px; height: 580px; background: rgba(159,75,255,.065); bottom: -160px; right: -180px; animation-delay: -5s; }
+    .orb-3 { width: 320px; height: 320px; background: rgba(0,244,232,.04); top: 45%; left: 50%; transform: translate(-50%,-50%); animation-delay: -9s; }
+    @keyframes orb-float {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(25px,18px) scale(1.06); }
+    }
 
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 9px;
+      border: 1px solid rgba(0,244,232,.28); background: rgba(0,244,232,.05);
+      border-radius: 50px; padding: 7px 20px;
+      font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--cyan); font-weight: 600; margin-bottom: 36px;
+      opacity: 0; animation: fadeUp .7s .15s forwards;
+    }
+    .badge-pulse {
+      width: 6px; height: 6px; background: var(--cyan); border-radius: 50%;
+      animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,244,232,.8); }
+      50%      { box-shadow: 0 0 0 7px rgba(0,244,232,0); }
+    }
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .hero-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(3.4rem, 9.5vw, 9rem);
+      line-height: .92; letter-spacing: -.025em; color: var(--white);
+      opacity: 0; animation: fadeUp .85s .3s forwards;
+    }
+    .hero-title .accent {
+      display: block;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 32px rgba(0,244,232,.3));
+    }
+
+    .hero-sub {
+      margin-top: 28px; max-width: 540px;
+      font-size: 1.05rem; color: var(--frost); font-weight: 300; letter-spacing: .01em;
+      opacity: 0; animation: fadeUp .8s .48s forwards;
+    }
+
+    .hero-btns {
+      margin-top: 48px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp .8s .62s forwards;
+    }
+
+    .btn-grad {
+      padding: 15px 42px; border-radius: 50px;
+      background: var(--grad135); color: var(--void);
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: .88rem; letter-spacing: .09em; text-transform: uppercase;
+      border: none; cursor: none; text-decoration: none; display: inline-block;
+      transition: box-shadow .3s, transform .25s, filter .25s;
+    }
+    .btn-grad:hover {
+      box-shadow: 0 0 60px -5px #00F4E8, 0 0 60px -5px #9F4BFF;
+      transform: scale(1.05); filter: brightness(1.08);
+    }
+    .btn-ghost {
+      padding: 14px 40px; border-radius: 50px;
+      background: transparent; border: 1px solid rgba(159,75,255,.45);
+      color: var(--white); font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: .88rem; letter-spacing: .09em; text-transform: uppercase;
+      cursor: none; text-decoration: none; display: inline-block;
+      transition: border-color .3s, box-shadow .3s, transform .25s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--purple);
+      box-shadow: 0 0 40px -10px var(--purple);
+      transform: scale(1.03);
+    }
+
+    .hero-ca {
+      margin-top: 44px;
+      font-size: .7rem; letter-spacing: .14em; color: rgba(168,176,192,.45);
+      opacity: 0; animation: fadeUp .7s .78s forwards;
+    }
+    .hero-ca span { color: rgba(0,244,232,.5); }
+
+    /* MARQUEE */
+    .marquee-wrap {
+      overflow: hidden; border-top: 1px solid rgba(0,244,232,.07);
+      border-bottom: 1px solid rgba(0,244,232,.07);
+      background: rgba(0,244,232,.02); padding: 15px 0; position: relative; z-index: 3;
+    }
+    .marquee-track {
+      display: flex; gap: 60px; width: max-content;
+      animation: marquee 24s linear infinite;
+    }
+    .mq-item {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: .75rem; letter-spacing: .2em; text-transform: uppercase;
+      white-space: nowrap; color: var(--frost);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .mq-item .star { color: var(--cyan); }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* SECTION BASE */
+    section { position: relative; z-index: 2; }
+
+    .stag {
+      display: inline-block; margin-bottom: 14px;
+      font-size: .7rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--cyan); font-weight: 600;
+    }
+    .stag::before { content: '— '; opacity: .45; }
+
+    .sh {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.1rem, 4.5vw, 3.9rem);
+      line-height: 1.04; letter-spacing: -.02em; color: var(--white);
+    }
+    .sh em {
+      font-style: normal;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .sb {
+      margin-top: 18px; color: var(--frost); font-size: .98rem;
+      font-weight: 300; max-width: 500px; line-height: 1.78;
+    }
+
+    /* REVEAL */
+    .rv {
+      opacity: 0; transform: translateY(38px);
+      transition: opacity .72s ease, transform .72s ease;
+    }
+    .rv.on { opacity: 1; transform: translateY(0); }
+    .rv.d1 { transition-delay: .1s; }
+    .rv.d2 { transition-delay: .2s; }
+    .rv.d3 { transition-delay: .3s; }
+    .rv.d4 { transition-delay: .42s; }
+
+    /* STATS */
+    #stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: rgba(255,255,255,.03);
+      border-top: 1px solid rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .sc {
+      padding: 56px 32px; background: var(--abyss); text-align: center;
+      transition: background .3s; opacity: 0; transform: translateY(28px);
+      transition: opacity .6s, transform .6s, background .3s;
+    }
+    .sc:hover { background: #1a1a28; }
+    .sc.on { opacity: 1; transform: translateY(0); }
+    .sc-num {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.5rem, 4.5vw, 3.6rem); line-height: 1;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .sc-lbl {
+      margin-top: 10px; font-size: .76rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--frost); font-weight: 500;
+    }
+
+    /* ABOUT */
+    #about {
+      padding: 120px 56px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 90px; align-items: center;
+    }
+    .about-vis {
+      display: flex; align-items: center; justify-content: center; min-height: 400px;
+    }
+    .ring-wrap { position: relative; width: 300px; height: 300px; }
+    .ring {
+      width: 100%; height: 100%; border-radius: 50%;
+      border: 1px solid rgba(0,244,232,.14);
+      display: flex; align-items: center; justify-content: center;
+      animation: spin1 22s linear infinite;
+    }
+    .ring-inner {
+      width: 210px; height: 210px; border-radius: 50%;
+      border: 1px solid rgba(159,75,255,.18);
+      display: flex; align-items: center; justify-content: center;
+      animation: spin1 13s linear infinite reverse;
+    }
+    .ring-core {
+      width: 108px; height: 108px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 38%, rgba(0,244,232,.28), rgba(159,75,255,.18));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 70px -10px rgba(0,244,232,.55);
+    }
+    .ring-core span {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: .92rem;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: .04em;
+    }
+    .orbit-dot {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 14px 3px rgba(0,244,232,.7);
+    }
+    .orbit-dot-p {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--purple); box-shadow: 0 0 12px 3px rgba(159,75,255,.7);
+    }
+    @keyframes spin1 {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* FEATURES */
+    #features { padding: 80px 56px 130px; }
+    .feat-hdr { text-align: center; margin-bottom: 76px; }
+    .feat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+    }
+    .fc {
+      background: var(--abyss); border: 1px solid rgba(255,255,255,.05);
+      border-radius: 18px; padding: 42px 38px; position: relative; overflow: hidden;
+      transition: transform .35s, border-color .35s, box-shadow .35s;
+    }
+    .fc::after {
+      content: ''; position: absolute; inset: 0; border-radius: 18px;
+      background: var(--grad135); opacity: 0; transition: opacity .35s;
+    }
+    .fc:hover { transform: translateY(-7px); border-color: rgba(0,244,232,.25); box-shadow: 0 22px 65px -18px rgba(0,244,232,.18); }
+    .fc:hover::after { opacity: .04; }
+    .fc-icon { font-size: 2.1rem; margin-bottom: 22px; display: block; position: relative; z-index: 1; }
+    .fc-title {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;
+      color: var(--white); margin-bottom: 12px; position: relative; z-index: 1;
+    }
+    .fc-text { font-size: .88rem; color: var(--frost); line-height: 1.74; position: relative; z-index: 1; }
+
+    /* ECOSYSTEM */
+    #ecosystem {
+      padding: 110px 56px;
+      background: linear-gradient(180deg, var(--void) 0%, var(--abyss) 50%, var(--void) 100%);
+      overflow: hidden;
+    }
+    .eco-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .eco-cv-wrap { display: flex; align-items: center; justify-content: center; min-height: 380px; }
+    #eco-canvas { width: 100%; max-width: 460px; }
+    .eco-list { display: flex; flex-direction: column; gap: 18px; }
+    .eco-row {
+      display: flex; align-items: flex-start; gap: 18px;
+      padding: 22px 26px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.05); background: rgba(20,20,31,.5);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .eco-row:hover { border-color: rgba(159,75,255,.28); box-shadow: 0 0 32px -12px rgba(159,75,255,.3); }
+    .eco-pip { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .pip-c { background: var(--cyan); box-shadow: 0 0 8px rgba(0,244,232,.6); }
+    .pip-p { background: var(--purple); box-shadow: 0 0 8px rgba(159,75,255,.6); }
+    .pip-w { background: #fff; box-shadow: 0 0 8px rgba(255,255,255,.3); }
+    .eco-row-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .94rem; color: var(--white); }
+    .eco-row-text  { font-size: .85rem; color: var(--frost); margin-top: 4px; }
+
+    /* TOKEN */
+    #token { padding: 110px 56px; text-align: center; }
+    .tok-card {
+      max-width: 720px; margin: 56px auto 0;
+      background: var(--abyss); border: 1px solid rgba(0,244,232,.1);
+      border-radius: 24px; padding: 58px 52px; position: relative; overflow: hidden;
+    }
+    .tok-card::before {
+      content: ''; position: absolute; top: -1px; left: 8%; right: 8%; height: 1px;
+      background: var(--grad);
+    }
+    .tok-ca-label { font-size: .72rem; letter-spacing: .13em; color: var(--frost); text-transform: uppercase; }
+    .tok-ca-val {
+      font-family: 'DM Sans', sans-serif; font-size: .82rem; color: var(--cyan);
+      word-break: break-all; margin-top: 8px; font-weight: 500; letter-spacing: .03em;
+    }
+    .copy-btn {
+      margin-top: 26px; display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 30px; border-radius: 50px;
+      border: 1px solid rgba(0,244,232,.3); background: transparent;
+      color: var(--cyan); font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
+      cursor: none; transition: all .25s;
+    }
+    .copy-btn:hover { background: rgba(0,244,232,.08); border-color: var(--cyan); box-shadow: 0 0 30px -10px var(--cyan); }
+    .tok-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1px; background: rgba(255,255,255,.05);
+      border-radius: 12px; overflow: hidden; margin-top: 40px;
+    }
+    .tg-cell { background: var(--void); padding: 28px 16px; text-align: center; }
+    .tg-val {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .tg-lbl { font-size: .72rem; letter-spacing: .14em; color: var(--frost); margin-top: 4px; text-transform: uppercase; }
+
+    /* MARAK */
+    #marak { padding: 100px 56px; display: flex; align-items: center; justify-content: center; }
+    .marak-card {
+      max-width: 800px; width: 100%;
+      background: var(--abyss); border: 1px solid rgba(159,75,255,.14);
+      border-radius: 22px; padding: 54px 52px;
+      display: flex; align-items: center; gap: 52px;
+      transition: border-color .35s, box-shadow .35s;
+    }
+    .marak-card:hover { border-color: rgba(159,75,255,.32); box-shadow: 0 0 70px -22px rgba(159,75,255,.32); }
+    .marak-ico { font-size: 3.8rem; flex-shrink: 0; }
+    .marak-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.55rem; color: var(--white); }
+    .marak-body { color: var(--frost); font-size: .9rem; margin-top: 10px; line-height: 1.7; }
+    .marak-link {
+      display: inline-flex; align-items: center; gap: 9px;
+      margin-top: 22px; font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--cyan); text-decoration: none;
+      transition: gap .22s, color .22s;
+    }
+    .marak-link:hover { gap: 16px; color: var(--white); }
+
+    /* CTA */
+    #cta {
+      padding: 120px 56px; text-align: center; position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0,244,232,.055) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .cta-h {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.4rem, 5.5vw, 4.8rem);
+      line-height: 1.04; letter-spacing: -.025em; color: var(--white);
+    }
+    .cta-h span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .cta-sub { color: var(--frost); font-size: 1rem; margin: 22px auto 0; max-width: 400px; }
+    .cta-btns { margin-top: 46px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid rgba(255,255,255,.05);
+      padding: 52px 56px 40px;
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: 24px;
+    }
+    .fl { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .flinks { display: flex; gap: 30px; list-style: none; }
+    .flinks a {
+      font-size: .76rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--frost); text-decoration: none; transition: color .2s;
+    }
+    .flinks a:hover { color: var(--cyan); }
+    .fr { text-align: right; }
+    .credit { font-size: .7rem; color: rgba(168,176,192,.35); letter-spacing: .06em; line-height: 1.8; }
+    .credit a { color: rgba(0,244,232,.45); text-decoration: none; transition: color .2s; }
+    .credit a:hover { color: var(--cyan); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      .nav-links { display: none; }
+      #about, .eco-grid { grid-template-columns: 1fr; gap: 40px; }
+      #about, #features, #ecosystem, #token, #marak, #cta { padding-left: 24px; padding-right: 24px; }
+      #stats { padding: 0; }
+      footer { grid-template-columns: 1fr; text-align: center; }
+      .fr { text-align: center; }
+      .flinks { justify-content: center; }
+      .marak-card { flex-direction: column; text-align: center; padding: 40px 28px; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Section -->
-        <h1>$LIBERTY</h1>
-        <p>Version [Your Version Name Here]</p>
+  <div id="cursor-ring"></div>
+  <div id="cursor-dot"></div>
+  <canvas id="bg-canvas"></canvas>
+  <div class="scanlines"></div>
 
-        <!-- Main Content Placeholder -->
-        <div class="content-area">
-            <p class="placeholder-text">
-                "Your content goes here.<br>
-                Replace this box with your amazing design, memes, and links."
-            </p>
-        </div>
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">$LIBERTY</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Why Liberty</a></li>
+      <li><a href="#token">Token</a></li>
+      <li><a href="#marak">Universe</a></li>
+    </ul>
+    <a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener" class="nav-cta">Get $LIBERTY</a>
+  </nav>
 
-        <!-- Credit / Portfolio Section -->
-        <div class="credit-footer">
-            <p>Created by: <a href="#">[Your Name / Portfolio Link]</a></p>
-            <p>Contract: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</p>
-        </div>
+  <main>
+
+    <!-- HERO -->
+    <section id="hero">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="hero-badge"><span class="badge-pulse"></span>Live on Solana</div>
+      <h1 class="hero-title">Freedom<br><span class="accent">On&#8209;Chain</span></h1>
+      <p class="hero-sub">$LIBERTY is a community-driven Solana token — decentralized, open, and free by design.</p>
+      <div class="hero-btns">
+        <a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener" class="btn-grad">Buy $LIBERTY</a>
+        <a href="#about" class="btn-ghost">Explore</a>
+      </div>
+      <div class="hero-ca">CA: <span>4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span></div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee-wrap" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="mq-item">$LIBERTY <span class="star">✦</span></span>
+        <span class="mq-item">Freedom On-Chain <span class="star">✦</span></span>
+        <span class="mq-item">Community Powered <span class="star">✦</span></span>
+        <span class="mq-item">Built on Solana <span class="star">✦</span></span>
+        <span class="mq-item">Open &amp; Decentralized <span class="star">✦</span></span>
+        <span class="mq-item">No Gatekeepers <span class="star">✦</span></span>
+        <span class="mq-item">$LIBERTY <span class="star">✦</span></span>
+        <span class="mq-item">Freedom On-Chain <span class="star">✦</span></span>
+        <span class="mq-item">Community Powered <span class="star">✦</span></span>
+        <span class="mq-item">Built on Solana <span class="star">✦</span></span>
+        <span class="mq-item">Open &amp; Decentralized <span class="star">✦</span></span>
+        <span class="mq-item">No Gatekeepers <span class="star">✦</span></span>
+      </div>
     </div>
 
+    <!-- STATS -->
+    <div id="stats">
+      <div class="sc rv">
+        <div class="sc-num" data-count="100" data-sfx="%">0%</div>
+        <div class="sc-lbl">Community Owned</div>
+      </div>
+      <div class="sc rv">
+        <div class="sc-num">0%</div>
+        <div class="sc-lbl">Buy / Sell Tax</div>
+      </div>
+      <div class="sc rv">
+        <div class="sc-num" data-count="1" data-sfx=""><span style="font-family:Syne;font-weight:800;background:linear-gradient(90deg,#00F4E8,#9F4BFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SOL</span></div>
+        <div class="sc-lbl">Blockchain</div>
+      </div>
+      <div class="sc rv">
+        <div class="sc-num">∞</div>
+        <div class="sc-lbl">Freedom</div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="about-vis rv">
+        <div class="ring-wrap">
+          <div class="ring">
+            <div class="ring-inner">
+              <div class="ring-core"><span>$LIBERTY</span></div>
+            </div>
+          </div>
+          <div class="orbit-dot"  style="top:-4px;left:calc(50% - 5px)"></div>
+          <div class="orbit-dot-p" style="bottom:-3px;left:calc(50% - 4px)"></div>
+          <div class="orbit-dot"  style="top:calc(50% - 5px);right:-4px"></div>
+        </div>
+      </div>
+      <div>
+        <span class="stag rv">What is $LIBERTY</span>
+        <h2 class="sh rv d1">Born Free.<br><em>Stays Free.</em></h2>
+        <p class="sb rv d2">$LIBERTY is more than a token — it's a statement. A Solana-native, fully community-driven asset with no gatekeepers, no centralized control, and no agenda beyond freedom itself.</p>
+        <p class="sb rv d3" style="margin-top:14px;">Created by Marak — open-source legend, artist, and relentless advocate for digital autonomy — $LIBERTY carries the spirit of decentralization forward into the next era of Web3.</p>
+        <div style="margin-top:40px;" class="rv d4">
+          <a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener" class="btn-grad">Get $LIBERTY</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <div class="feat-hdr">
+        <span class="stag rv">Why Liberty</span>
+        <h2 class="sh rv d1">Built Different.</h2>
+        <p class="sb rv d2" style="margin:18px auto 0;text-align:center;max-width:460px;">
+          The convergence of open-source ethos, community power, and Solana-grade speed.
+        </p>
+      </div>
+      <div class="feat-grid">
+        <div class="fc rv">
+          <span class="fc-icon">⚡</span>
+          <div class="fc-title">Solana Speed</div>
+          <p class="fc-text">Sub-second finality. Near-zero transaction costs. $LIBERTY runs on one of the fastest blockchains ever engineered.</p>
+        </div>
+        <div class="fc rv d1">
+          <span class="fc-icon">🔓</span>
+          <div class="fc-title">Fully Open</div>
+          <p class="fc-text">No private allocations, no VC unlocks, no team wallets silently draining the community. Pure, permissionless participation from day one.</p>
+        </div>
+        <div class="fc rv d2">
+          <span class="fc-icon">🌐</span>
+          <div class="fc-title">Community First</div>
+          <p class="fc-text">Every direction, every decision — the community holds the compass. $LIBERTY belongs to those who believe in it.</p>
+        </div>
+        <div class="fc rv d3">
+          <span class="fc-icon">🛡️</span>
+          <div class="fc-title">Trustless Design</div>
+          <p class="fc-text">Smart contracts do the talking. No middlemen, no permissions required, no censorship possible. The code is the law.</p>
+        </div>
+        <div class="fc rv">
+          <span class="fc-icon">🎨</span>
+          <div class="fc-title">Art &amp; Culture</div>
+          <p class="fc-text">Rooted in open-source art and meme culture, $LIBERTY merges digital creativity with genuine on-chain ownership.</p>
+        </div>
+        <div class="fc rv d1">
+          <span class="fc-icon">🚀</span>
+          <div class="fc-title">No Ceiling</div>
+          <p class="fc-text">Community-driven tokens rooted in a real movement have unlimited potential. The sky isn't the limit — it's just the beginning.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ECOSYSTEM -->
+    <section id="ecosystem">
+      <div class="eco-grid">
+        <div>
+          <span class="stag rv">Ecosystem</span>
+          <h2 class="sh rv d1">Part of a <em>Larger Universe</em></h2>
+          <p class="sb rv d2" style="margin-top:18px;">$LIBERTY lives at the intersection of art, software, music, and magic — all pillars of the Marak universe. A token embedded in a genuinely creative ecosystem.</p>
+          <div class="eco-list" style="margin-top:36px;">
+            <div class="eco-row rv d2">
+              <div class="eco-pip pip-c"></div>
+              <div>
+                <div class="eco-row-title">Open-Source Legacy</div>
+                <div class="eco-row-text">Marak built software used by millions worldwide. $LIBERTY carries those same principles: open, free, and for everyone.</div>
+              </div>
+            </div>
+            <div class="eco-row rv d3">
+              <div class="eco-pip pip-p"></div>
+              <div>
+                <div class="eco-row-title">Cross-Community Reach</div>
+                <div class="eco-row-text">Art, software, music, and memes converge. The $LIBERTY community spans creators, developers, and believers worldwide.</div>
+              </div>
+            </div>
+            <div class="eco-row rv d4">
+              <div class="eco-pip pip-w"></div>
+              <div>
+                <div class="eco-row-title">Fair Launch on Pump.fun</div>
+                <div class="eco-row-text">Launched transparently on Pump.fun — the fairest launchpad on Solana. Full visibility, no hidden mechanics, no surprises.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="eco-cv-wrap rv">
+          <canvas id="eco-canvas" width="460" height="420"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOKEN -->
+    <section id="token">
+      <span class="stag rv">Token Info</span>
+      <h2 class="sh rv d1">The $LIBERTY Token</h2>
+      <p class="sb rv d2" style="margin:18px auto 0;text-align:center;">A Solana SPL token. Tradeable on any Solana DEX. Transparent by design.</p>
+      <div class="tok-card rv">
+        <div class="tok-ca-label">Contract Address</div>
+        <div class="tok-ca-val">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</div>
+        <button class="copy-btn" id="copybtn" onclick="copyCA()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Address
+        </button>
+        <div class="tok-grid">
+          <div class="tg-cell"><div class="tg-val">SOL</div><div class="tg-lbl">Network</div></div>
+          <div class="tg-cell"><div class="tg-val">SPL</div><div class="tg-lbl">Standard</div></div>
+          <div class="tg-cell"><div class="tg-val">Fair</div><div class="tg-lbl">Launch</div></div>
+        </div>
+        <div style="margin-top:36px;">
+          <a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener" class="btn-grad">Trade on Pump.fun ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARAK UNIVERSE -->
+    <section id="marak">
+      <div class="marak-card rv">
+        <div class="marak-ico">🌌</div>
+        <div>
+          <div class="marak-title">The Marak Universe</div>
+          <div class="marak-body">$LIBERTY is part of a bigger story — one told through art, code, music, and magic on marak.com. Explore the world that gave birth to this token and see where the vision leads next.</div>
+          <a href="https://marak.com/" target="_blank" rel="noopener" class="marak-link">Explore marak.com <span>→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta">
+      <h2 class="cta-h rv">The Future is<br><span>Yours to Claim</span></h2>
+      <p class="cta-sub rv d1">$LIBERTY doesn't wait for permission. Neither should you.</p>
+      <div class="cta-btns rv d2">
+        <a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener" class="btn-grad">Buy $LIBERTY Now</a>
+        <a href="https://marak.com/" target="_blank" rel="noopener" class="btn-ghost">Visit marak.com</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="fl">$LIBERTY</div>
+    <ul class="flinks">
+      <li><a href="https://marak.com/" target="_blank" rel="noopener">marak.com</a></li>
+      <li><a href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener">Pump.fun</a></li>
+    </ul>
+    <div class="fr">
+      <div class="credit">
+        Site crafted by <a href="https://x.com/ADEX_BERRY01" target="_blank" rel="noopener">@ADEX_BERRY01</a><br>
+        <span style="opacity:.6">Twitter / X</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── CURSOR ─────────────────────────────────────────────────────────── */
+    const ring = document.getElementById('cursor-ring');
+    const dot  = document.getElementById('cursor-dot');
+    let rx = 0, ry = 0, tx = 0, ty = 0;
+    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+    (function loop() {
+      rx += (tx - rx) * .11; ry += (ty - ry) * .11;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      dot.style.left  = tx + 'px'; dot.style.top  = ty + 'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.width = ring.style.height = '58px'; ring.style.borderColor = '#9F4BFF'; });
+      el.addEventListener('mouseleave', () => { ring.style.width = ring.style.height = '38px'; ring.style.borderColor = '#00F4E8'; });
+    });
+
+    /* ── PARTICLE BG ────────────────────────────────────────────────────── */
+    const cv = document.getElementById('bg-canvas');
+    const ctx = cv.getContext('2d');
+    let W, H;
+    const mouse = { x: -999, y: -999 };
+    function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    class P {
+      constructor() { this.init(); }
+      init() {
+        this.x  = Math.random() * W;
+        this.y  = Math.random() * H;
+        this.vx = (Math.random() - .5) * .28;
+        this.vy = (Math.random() - .5) * .28;
+        this.r  = Math.random() * 1.3 + .35;
+        this.a  = Math.random() * .55 + .1;
+        this.c  = Math.random() > .5 ? '#00F4E8' : '#9F4BFF';
+      }
+      step() {
+        const dx = mouse.x - this.x, dy = mouse.y - this.y;
+        const d  = Math.sqrt(dx*dx+dy*dy);
+        if (d < 110) { this.vx -= dx/d*.013; this.vy -= dy/d*.013; }
+        this.vx *= .992; this.vy *= .992;
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0) this.x = W; if (this.x > W) this.x = 0;
+        if (this.y < 0) this.y = H; if (this.y > H) this.y = 0;
+      }
+      draw() {
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.fillStyle = this.c; ctx.globalAlpha = this.a; ctx.fill(); ctx.globalAlpha = 1;
+      }
+    }
+    const ps = Array.from({length: 140}, () => new P());
+
+    function drawLinks() {
+      for (let i = 0; i < ps.length; i++) for (let j = i+1; j < ps.length; j++) {
+        const dx = ps[i].x-ps[j].x, dy = ps[i].y-ps[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 98) {
+          ctx.beginPath(); ctx.moveTo(ps[i].x,ps[i].y); ctx.lineTo(ps[j].x,ps[j].y);
+          ctx.strokeStyle = '#00F4E8'; ctx.globalAlpha = (.3-d/98*.3)*.35; ctx.lineWidth = .4; ctx.stroke(); ctx.globalAlpha=1;
+        }
+      }
+    }
+    function frame() {
+      ctx.clearRect(0,0,W,H);
+      ps.forEach(p => { p.step(); p.draw(); });
+      drawLinks();
+      requestAnimationFrame(frame);
+    }
+    frame();
+
+    /* ── NAV ────────────────────────────────────────────────────────────── */
+    window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', scrollY > 40));
+
+    /* ── REVEAL OBSERVER ────────────────────────────────────────────────── */
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); }), { threshold: .1 });
+    document.querySelectorAll('.rv,.sc').forEach(el => obs.observe(el));
+
+    /* ── STAT COUNTER ───────────────────────────────────────────────────── */
+    const statObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.querySelectorAll('[data-count]').forEach(el => {
+          const target = +el.dataset.count, sfx = el.dataset.sfx||'';
+          let cur = 0; const step = Math.ceil(target/55);
+          const id = setInterval(() => { cur = Math.min(cur+step,target); el.textContent = cur+sfx; if(cur>=target) clearInterval(id); }, 22);
+        });
+        statObs.unobserve(e.target);
+      });
+    }, {threshold:.25});
+    statObs.observe(document.getElementById('stats'));
+
+    /* ── ECOSYSTEM CANVAS ───────────────────────────────────────────────── */
+    const ec = document.getElementById('eco-canvas');
+    const ectx = ec.getContext('2d');
+    const EW = ec.width, EH = ec.height, CX = EW/2, CY = EH/2;
+    const nodes = [
+      {lbl:'ART',   angle:0,   color:'#00F4E8'},
+      {lbl:'CODE',  angle:72,  color:'#9F4BFF'},
+      {lbl:'MUSIC', angle:144, color:'#00F4E8'},
+      {lbl:'MAGIC', angle:216, color:'#9F4BFF'},
+      {lbl:'MEMES', angle:288, color:'#00F4E8'},
+    ];
+    const R = 148;
+    let t = 0;
+    function drawEco() {
+      ectx.clearRect(0,0,EW,EH); t += .009;
+      const pulse = Math.sin(t)*5;
+      // center glow
+      const cg = ectx.createRadialGradient(CX,CY,0,CX,CY,58+pulse);
+      cg.addColorStop(0,'rgba(0,244,232,.22)'); cg.addColorStop(.6,'rgba(159,75,255,.09)'); cg.addColorStop(1,'transparent');
+      ectx.beginPath(); ectx.arc(CX,CY,58+pulse,0,Math.PI*2); ectx.fillStyle=cg; ectx.fill();
+      // center ring
+      ectx.beginPath(); ectx.arc(CX,CY,38,0,Math.PI*2); ectx.strokeStyle='rgba(0,244,232,.3)'; ectx.lineWidth=1.5; ectx.stroke();
+      // center text
+      ectx.fillStyle='#F8F8FF'; ectx.font='bold 10px Syne,sans-serif'; ectx.textAlign='center'; ectx.textBaseline='middle';
+      ectx.fillText('$LIBERTY',CX,CY);
+      nodes.forEach((n,i) => {
+        const a = (n.angle + t*16) * Math.PI/180;
+        const nx = CX + Math.cos(a)*R, ny = CY + Math.sin(a)*R;
+        // line
+        const prog = (Math.sin(t*2+i)+1)/2;
+        ectx.beginPath(); ectx.moveTo(CX+Math.cos(a)*38,CY+Math.sin(a)*38); ectx.lineTo(nx,ny);
+        const lg = ectx.createLinearGradient(CX,CY,nx,ny);
+        lg.addColorStop(0,'rgba(0,244,232,.03)'); lg.addColorStop(prog,n.color+'99'); lg.addColorStop(1,'rgba(159,75,255,.05)');
+        ectx.strokeStyle=lg; ectx.lineWidth=1; ectx.stroke();
+        // node bg
+        ectx.beginPath(); ectx.arc(nx,ny,24,0,Math.PI*2); ectx.fillStyle='rgba(20,20,31,.9)'; ectx.fill();
+        ectx.strokeStyle=n.color+'44'; ectx.lineWidth=1; ectx.stroke();
+        // outer glow
+        ectx.beginPath(); ectx.arc(nx,ny,28+pulse*.25,0,Math.PI*2); ectx.strokeStyle=n.color+'18'; ectx.lineWidth=1; ectx.stroke();
+        // label
+        ectx.fillStyle=n.color; ectx.font='bold 8px Syne,sans-serif'; ectx.textAlign='center'; ectx.textBaseline='middle';
+        ectx.fillText(n.lbl,nx,ny);
+      });
+      requestAnimationFrame(drawEco);
+    }
+    drawEco();
+
+    /* ── COPY CA ────────────────────────────────────────────────────────── */
+    function copyCA() {
+      navigator.clipboard.writeText('4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump').then(() => {
+        const btn = document.getElementById('copybtn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Address', 2200);
+      });
+    }
+
+    /* ── PARALLAX ORBS ──────────────────────────────────────────────────── */
+    window.addEventListener('scroll', () => {
+      const sy = scrollY;
+      document.querySelectorAll('.orb-1').forEach(e => e.style.transform = `translateY(${sy*.14}px)`);
+      document.querySelectorAll('.orb-2').forEach(e => e.style.transform = `translateY(${-sy*.09}px)`);
+      document.querySelectorAll('.orb-3').forEach(e => e.style.transform = `translate(-50%,-50%) translateY(${sy*.06}px)`);
+    });
+  </script>
 </body>
 </html>
