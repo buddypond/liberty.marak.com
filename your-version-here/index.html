@@ -1,105 +1,1030 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My $LIBERTY Version</title>
-    <style>
-        /* Simple Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$LIBERTY — Freedom On-Chain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;900&family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet" />
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8; /* Very light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  <style>
+    :root {
+      --gold:       #d4a017;
+      --gold-light: #f0c84a;
+      --gold-dim:   #8a6a10;
+      --cream:      #f5ead5;
+      --red:        #b22234;
+      --red-dark:   #7a0f1a;
+      --navy:       #0a1628;
+      --navy-mid:   #0e2040;
+      --navy-light: #1b3a6b;
+      --white:      #ffffff;
+      --green-up:   #3ddc84;
+      --red-down:   #ff4d4d;
+    }
 
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 800px;
-            margin: 40px;
-            padding: 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+    body {
+      background: var(--navy);
+      color: var(--cream);
+      font-family: 'Cinzel', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-        }
+    /* stars */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 12%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 32% 28%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 8%, rgba(255,255,255,0.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 72% 19%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 65% 42%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 42% 65%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 50% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 88%, rgba(255,255,255,0.7) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        /* Placeholder Content Area */
-        .content-area {
-            border: 2px dashed #e0e0e0;
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
+    /* torch glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212,160,23,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: torchPulse 4s ease-in-out infinite;
+    }
 
-        .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+    @keyframes torchPulse {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleX(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scaleX(1.08); }
+    }
 
-        /* Credit Footer */
-        .credit-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #888;
-        }
+    /* TICKER */
+    .ticker-bar {
+      background: var(--red-dark);
+      border-bottom: 2px solid var(--gold);
+      padding: 8px 0;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
 
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: tickerScroll 28s linear infinite;
+      gap: 60px;
+    }
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .ticker-track span {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    @keyframes tickerScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid rgba(212,160,23,0.25);
+    }
+
+    .nav-logo {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(212,160,23,0.6);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold-light); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(48px, 10vw, 110px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 45%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      animation: fadeUp 0.8s 0.1s ease both;
+      filter: drop-shadow(0 0 30px rgba(212,160,23,0.4));
+    }
+
+    .hero-sub {
+      font-size: clamp(14px, 2.5vw, 22px);
+      color: rgba(245,234,213,0.7);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    /* DASHBOARD */
+    .dashboard {
+      position: relative;
+      z-index: 10;
+      max-width: 960px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 16px; }
+      .pillars { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+      background: rgba(14,32,64,0.85);
+      border: 1px solid rgba(212,160,23,0.3);
+      border-radius: 4px;
+      padding: 20px 16px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.6;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(212,160,23,0.7);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-family: 'Source Code Pro', monospace;
+      font-size: clamp(16px, 2.5vw, 24px);
+      font-weight: 600;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+
+    .stat-value.loading {
+      color: rgba(212,160,23,0.4);
+      animation: blink 1s ease infinite;
+      font-size: 16px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1; }
+    }
+
+    .stat-change {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .stat-change.up      { color: var(--green-up); }
+    .stat-change.down    { color: var(--red-down); }
+    .stat-change.neutral { color: rgba(245,234,213,0.4); }
+
+    /* CHART */
+    .chart-card {
+      background: rgba(14,32,64,0.85);
+      border: 1px solid rgba(212,160,23,0.3);
+      border-radius: 4px;
+      padding: 24px 20px 16px;
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+    }
+
+    .chart-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      color: var(--green-up);
+      letter-spacing: 0.1em;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green-up);
+      animation: livePulse 1.5s ease infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    canvas#priceChart { width: 100% !important; height: 140px !important; }
+
+    /* fetch status */
+    .fetch-status {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      color: rgba(245,234,213,0.35);
+      text-align: right;
+      margin-top: 8px;
+      letter-spacing: 0.1em;
+    }
+
+    /* CONTRACT */
+    .contract-band {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .contract-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(178,34,52,0.15);
+      border: 1px solid rgba(178,34,52,0.5);
+      border-radius: 4px;
+      padding: 12px 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .contract-label {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+    }
+
+    .contract-address {
+      font-family: 'Source Code Pro', monospace;
+      font-size: clamp(9px, 1.4vw, 13px);
+      color: var(--cream);
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: color 0.2s;
+      word-break: break-all;
+    }
+
+    .contract-address:hover { color: var(--gold-light); }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--gold-dim);
+      border-radius: 3px;
+      color: var(--gold);
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover { background: var(--gold); color: var(--navy); }
+
+    /* DIVIDER */
+    .divider {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      max-width: 600px;
+      margin: 0 auto 72px;
+    }
+
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim)); }
+    .divider-line.right { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+    .divider-star { color: var(--gold); font-size: 18px; }
+
+    /* MANIFESTO */
+    .manifesto {
+      position: relative;
+      z-index: 5;
+      max-width: 760px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .manifesto h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(20px, 4vw, 36px);
+      color: var(--gold);
+      margin-bottom: 28px;
+      letter-spacing: 0.05em;
+    }
+
+    .manifesto p {
+      font-size: clamp(14px, 1.8vw, 17px);
+      line-height: 1.85;
+      color: rgba(245,234,213,0.75);
+      font-family: 'Cinzel', serif;
+      font-weight: 400;
+      margin-bottom: 18px;
+    }
+
+    /* PILLARS */
+    .pillars {
+      position: relative;
+      z-index: 5;
+      max-width: 960px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .pillar {
+      border: 1px solid rgba(212,160,23,0.25);
+      border-top: 3px solid var(--gold);
+      padding: 28px 22px;
+      background: rgba(10,22,40,0.7);
+      backdrop-filter: blur(6px);
+      transition: border-color 0.3s;
+    }
+
+    .pillar:hover {
+      border-color: rgba(212,160,23,0.6);
+      border-top-color: var(--gold-light);
+    }
+
+    .pillar-icon { font-size: 30px; margin-bottom: 14px; }
+
+    .pillar h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+
+    .pillar p {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      color: rgba(245,234,213,0.6);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* CTA */
+    .cta-row {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 80px;
+      padding: 0 24px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy);
+      border: none;
+      padding: 14px 36px;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212,160,23,0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      padding: 13px 36px;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(212,160,23,0.1);
+      border-color: var(--gold);
+    }
+
+    /* FLAG STRIPE */
+    .flag-stripe {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      height: 6px;
+      margin-bottom: 60px;
+    }
+
+    .stripe-r { flex: 1; background: var(--red); }
+    .stripe-w { flex: 1; background: var(--white); }
+    .stripe-b { flex: 1; background: var(--navy-light); }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(212,160,23,0.2);
+      padding: 40px 48px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-brand {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 18px;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-built {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      color: rgba(245,234,213,0.4);
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .footer-built a {
+      color: var(--gold-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-built a:hover { color: var(--gold-light); }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(245,234,213,0.6);
+      text-decoration: none;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 8px 14px;
+      border: 1px solid rgba(212,160,23,0.2);
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .social-link:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold-light);
+    }
+
+    .social-icon { width: 14px; height: 14px; fill: currentColor; }
+
+    .footer-disclaimer {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 10px;
+      color: rgba(245,234,213,0.25);
+      letter-spacing: 0.08em;
+      text-align: center;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { opacity: 0; }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Section -->
-        <h1>$LIBERTY</h1>
-        <p>Version [Your Version Name Here]</p>
+  <!-- TICKER -->
+  <div class="ticker-bar" aria-label="Live price ticker">
+    <div class="ticker-track">
+      <span>$LIBERTY &bull; FREEDOM ON-CHAIN</span>
+      <span>CA: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span>
+      <span>&star; BUILT ON SOLANA &star;</span>
+      <span>PRICE: <span id="tickerPrice">—</span></span>
+      <span>MCAP: <span id="tickerMcap">—</span></span>
+      <span>GIVE ME $LIBERTY OR GIVE ME NOTHING</span>
+      <!-- duplicate for seamless loop -->
+      <span>$LIBERTY &bull; FREEDOM ON-CHAIN</span>
+      <span>CA: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span>
+      <span>&star; BUILT ON SOLANA &star;</span>
+      <span>PRICE: <span id="tickerPrice2">—</span></span>
+      <span>MCAP: <span id="tickerMcap2">—</span></span>
+      <span>GIVE ME $LIBERTY OR GIVE ME NOTHING</span>
+    </div>
+  </div>
 
-        <!-- Main Content Placeholder -->
-        <div class="content-area">
-            <p class="placeholder-text">
-                "Your content goes here.<br>
-                Replace this box with your amazing design, memes, and links."
-            </p>
-        </div>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">$LIBERTY</div>
+    <ul class="nav-links">
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="https://dexscreener.com/solana/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank" rel="noopener">Trade</a></li>
+    </ul>
+  </nav>
 
-        <!-- Credit / Portfolio Section -->
-        <div class="credit-footer">
-            <p>Created by: <a href="#">[Your Name / Portfolio Link]</a></p>
-            <p>Contract: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</p>
-        </div>
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Freedom is not given. It is taken.</p>
+    <h1 class="hero-title">$LIBERTY</h1>
+    <p class="hero-sub">The Spirit of Revolution, On-Chain</p>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="dashboard" id="dashboard">
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-label">Price USD</div>
+        <div class="stat-value loading" id="priceUSD">loading...</div>
+        <div class="stat-change neutral" id="priceChange">fetching</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Market Cap</div>
+        <div class="stat-value loading" id="marketCap">loading...</div>
+        <div class="stat-change neutral" id="mcapChange">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">24h Volume</div>
+        <div class="stat-value loading" id="volume24h">loading...</div>
+        <div class="stat-change neutral" id="volLabel">24h</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Liquidity</div>
+        <div class="stat-value loading" id="liquidity">loading...</div>
+        <div class="stat-change neutral">on-chain</div>
+      </div>
     </div>
 
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Price Action — $LIBERTY / USD</span>
+        <span class="chart-live">
+          <span class="live-dot"></span>LIVE
+        </span>
+      </div>
+      <canvas id="priceChart"></canvas>
+      <div class="fetch-status" id="fetchStatus">initializing...</div>
+    </div>
+  </section>
+
+  <!-- CONTRACT -->
+  <div class="contract-band">
+    <div class="contract-inner">
+      <span class="contract-label">CA</span>
+      <span class="contract-address">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span>
+      <button class="copy-btn" id="copyBtn">COPY</button>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-star">&#9733;</span>
+    <div class="divider-line right"></div>
+  </div>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" id="manifesto">
+    <h2>The Declaration</h2>
+    <p>
+      When the systems of men seek to chain the will of the people, it falls upon those who remember
+      freedom to act. $LIBERTY is not a speculation — it is a signal. A beacon lit on-chain for every
+      soul who refuses to bow to permission.
+    </p>
+    <p>
+      The torch is lit. The ledger is open. The code does not lie.
+      In every wallet that holds $LIBERTY, a free mind declares itself to the world.
+    </p>
+  </section>
+
+  <!-- PILLARS -->
+  <div class="pillars fade-up">
+    <div class="pillar">
+      <div class="pillar-icon">&#128293;</div>
+      <h3>Immutable</h3>
+      <p>No central authority. No off switch. The contract speaks for itself — forever recorded on Solana's ledger.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">&#9889;</div>
+      <h3>Sovereign</h3>
+      <p>Not your keys, not your freedom. $LIBERTY lives in self-custodied wallets across a decentralized world.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">&#129413;</div>
+      <h3>Community</h3>
+      <p>Born from the code of an open-source rebel. Carried forward by every holder who values freedom above all.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-row">
+    <a href="https://dexscreener.com/solana/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump"
+       target="_blank" rel="noopener" class="btn-primary">Buy $LIBERTY</a>
+    <a href="https://github.com/buddypond/liberty.marak.com"
+       target="_blank" rel="noopener" class="btn-secondary">GitHub Repo</a>
+  </div>
+
+  <!-- FLAG STRIPE -->
+  <div class="flag-stripe" aria-hidden="true">
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+    <div class="stripe-r"></div><div class="stripe-w"></div><div class="stripe-b"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">$LIBERTY</div>
+
+    <div class="social-links">
+      <a href="https://www.linkedin.com/in/israel-olawuyi/" target="_blank" rel="noopener" class="social-link">
+        <svg class="social-icon" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://x.com/OverwaIsrael886" target="_blank" rel="noopener" class="social-link">
+        <svg class="social-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        @OverwaIsrael886
+      </a>
+      <a href="https://github.com/Overwatch886" target="_blank" rel="noopener" class="social-link">
+        <svg class="social-icon" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        Overwatch886
+      </a>
+      <a href="https://israelolawuyi.framer.website" target="_blank" rel="noopener" class="social-link">
+        <svg class="social-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        Portfolio
+      </a>
+    </div>
+
+    <div class="footer-built">
+      Built by <a href="https://israelolawuyi.framer.website" target="_blank" rel="noopener">Olawuyi Israel Mobolaji</a>
+      &nbsp;&middot;&nbsp; $LIBERTY Supreme HTML Coder Contest Entry &nbsp;&middot;&nbsp;
+      <a href="https://liberty.marak.com" target="_blank" rel="noopener">liberty.marak.com</a>
+    </div>
+
+    <p class="footer-disclaimer">
+      $LIBERTY is a community meme token on Solana. Not financial advice.
+      Not affiliated with any government or financial institution. DYOR.
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>
+    // ── COPY CA ──
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      navigator.clipboard.writeText('4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump').then(() => {
+        this.textContent = 'COPIED!';
+        setTimeout(() => { this.textContent = 'COPY'; }, 1800);
+      });
+    });
+
+    // ── CHART ──
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const labels = [];
+    const prices = [];
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 140);
+    grad.addColorStop(0, 'rgba(212,160,23,0.35)');
+    grad.addColorStop(1, 'rgba(212,160,23,0.02)');
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: prices,
+          borderColor: '#d4a017',
+          borderWidth: 2,
+          backgroundColor: grad,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 300 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: { label: c => '$' + c.parsed.y.toFixed(10) },
+            backgroundColor: 'rgba(10,22,40,0.95)',
+            borderColor: 'rgba(212,160,23,0.4)',
+            borderWidth: 1,
+            titleColor: '#d4a017',
+            bodyColor: '#f5ead5',
+            bodyFont: { family: 'Source Code Pro' },
+            titleFont: { family: 'Source Code Pro' }
+          }
+        },
+        scales: {
+          x: { display: false },
+          y: {
+            display: true,
+            position: 'right',
+            grid: { color: 'rgba(212,160,23,0.08)' },
+            ticks: {
+              color: 'rgba(212,160,23,0.5)',
+              font: { family: 'Source Code Pro', size: 9 },
+              callback: v => '$' + Number(v).toFixed(8)
+            }
+          }
+        }
+      }
+    });
+
+    // ── FORMATTERS ──
+    function fmtUSD(n) {
+      if (!n || isNaN(n)) return '—';
+      if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(2) + 'K';
+      return '$' + n.toFixed(2);
+    }
+
+    function fmtPrice(n) {
+      if (!n || isNaN(n)) return '—';
+      if (n < 0.0000001) return '$' + n.toExponential(3);
+      return '$' + n.toFixed(8);
+    }
+
+    function setChange(el, pct) {
+      if (pct === null || pct === undefined || isNaN(pct)) {
+        el.textContent = '—';
+        el.className = 'stat-change neutral';
+        return;
+      }
+      const sign = pct >= 0 ? '+' : '';
+      el.textContent = sign + pct.toFixed(2) + '%';
+      el.className = 'stat-change ' + (pct >= 0 ? 'up' : 'down');
+    }
+
+    function clearLoading(el) {
+      el.classList.remove('loading');
+    }
+
+    function setStatus(msg) {
+      document.getElementById('fetchStatus').textContent = msg;
+    }
+
+    // ── PRICE FETCH ──
+    // Uses two DexScreener endpoints as primary/fallback.
+    // The /tokens/ endpoint requires no auth and is CORS-open in browsers.
+    const CA = '4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump';
+    let lastPrice = null;
+
+    async function tryDexscreenerTokens() {
+      const res = await fetch(
+        `https://api.dexscreener.com/tokens/v1/solana/${CA}`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      if (!res.ok) throw new Error('tokens v1 ' + res.status);
+      const json = await res.json();
+      // response is an array of pairs
+      const pair = Array.isArray(json) ? json[0] : (json.pairs && json.pairs[0]);
+      if (!pair) throw new Error('no pair data');
+      return pair;
+    }
+
+    async function tryDexscreenerLatest() {
+      const res = await fetch(
+        `https://api.dexscreener.com/latest/dex/tokens/${CA}`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      if (!res.ok) throw new Error('latest ' + res.status);
+      const json = await res.json();
+      const pair = json.pairs && json.pairs[0];
+      if (!pair) throw new Error('no pair data');
+      return pair;
+    }
+
+    async function fetchPrice() {
+      let pair = null;
+      let source = '';
+
+      try {
+        pair = await tryDexscreenerTokens();
+        source = 'dexscreener/tokens';
+      } catch (e1) {
+        try {
+          pair = await tryDexscreenerLatest();
+          source = 'dexscreener/latest';
+        } catch (e2) {
+          setStatus('price feed unavailable — retrying in 30s');
+          return;
+        }
+      }
+
+      const price = parseFloat(pair.priceUsd) || 0;
+      const mcap  = parseFloat(pair.marketCap) || 0;
+      const vol   = parseFloat(pair.volume?.h24) || 0;
+      const liq   = parseFloat(pair.liquidity?.usd) || 0;
+      const chg   = parseFloat(pair.priceChange?.h24);
+
+      // Cards
+      const pEl = document.getElementById('priceUSD');
+      pEl.textContent = fmtPrice(price);
+      clearLoading(pEl);
+      setChange(document.getElementById('priceChange'), chg);
+
+      const mEl = document.getElementById('marketCap');
+      mEl.textContent = fmtUSD(mcap);
+      clearLoading(mEl);
+      setChange(document.getElementById('mcapChange'), chg);
+
+      const vEl = document.getElementById('volume24h');
+      vEl.textContent = fmtUSD(vol);
+      clearLoading(vEl);
+      document.getElementById('volLabel').textContent = '24h';
+      document.getElementById('volLabel').className = 'stat-change neutral';
+
+      const lEl = document.getElementById('liquidity');
+      lEl.textContent = fmtUSD(liq);
+      clearLoading(lEl);
+
+      // Ticker
+      document.getElementById('tickerPrice').textContent  = fmtPrice(price);
+      document.getElementById('tickerPrice2').textContent = fmtPrice(price);
+      document.getElementById('tickerMcap').textContent   = fmtUSD(mcap);
+      document.getElementById('tickerMcap2').textContent  = fmtUSD(mcap);
+
+      // Chart
+      const t = new Date().toLocaleTimeString('en-US', { hour12: false });
+      labels.push(t);
+      prices.push(price);
+      if (labels.length > 60) { labels.shift(); prices.shift(); }
+
+      if (lastPrice !== null) {
+        chart.data.datasets[0].borderColor = price >= lastPrice ? '#d4a017' : '#ff4d4d';
+      }
+      chart.update('none');
+      lastPrice = price;
+
+      setStatus('last update: ' + t + ' via ' + source);
+    }
+
+    fetchPrice();
+    setInterval(fetchPrice, 30000);
+
+    // ── SCROLL FADE-IN ──
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animation = 'fadeUp 0.7s ease forwards';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+  </script>
 </body>
 </html>
