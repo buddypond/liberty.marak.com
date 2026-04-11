@@ -1,105 +1,1518 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My $LIBERTY Version</title>
-    <style>
-        /* Simple Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LIBERTAS PROTOCOL — Digital Freedom Uprising</title>
+<meta name="description" content="The decentralized uprising begins. No masters. No servers. No silence."/>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8; /* Very light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  :root {
+    --void: #030308;
+    --void2: #080812;
+    --cyan: #00FFD1;
+    --cyan-dim: #00FFD140;
+    --cyan-glow: #00FFD180;
+    --gold: #FFD700;
+    --gold-dim: #FFD70030;
+    --red: #FF3C3C;
+    --red-dim: #FF3C3C30;
+    --white: #F0F0F0;
+    --muted: #556677;
+    --grid: #0A0A18;
+    --font-mono: 'Courier New', Courier, monospace;
+    --font-display: 'Arial Narrow', 'Arial', sans-serif;
+  }
 
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 800px;
-            margin: 40px;
-            padding: 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+  html { scroll-behavior: smooth; font-size: 16px; }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+  body {
+    background: var(--void);
+    color: var(--white);
+    font-family: var(--font-mono);
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-        }
+  /* ===== SCANLINE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
 
-        /* Placeholder Content Area */
-        .content-area {
-            border: 2px dashed #e0e0e0;
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
+  /* ===== NOISE TEXTURE ===== */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+  }
 
-        .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid rgba(0,255,209,0.1);
+    background: rgba(3,3,8,0.85);
+    backdrop-filter: blur(12px);
+  }
 
-        /* Credit Footer */
-        .credit-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #888;
-        }
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    text-transform: uppercase;
+  }
 
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
+  .nav-logo span { color: var(--gold); }
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ===== HERO ===== */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Particle canvas */
+  #particle-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    padding: 0.35rem 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeIn 1s ease 0.5s both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 1s ease 0.7s both;
+  }
+
+  .hero-headline .line-cyan { color: var(--cyan); }
+  .hero-headline .line-gold {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--gold);
+  }
+  .hero-headline .line-white { color: var(--white); }
+
+  .hero-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+    max-width: 500px;
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease 0.9s both;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    animation: fadeIn 1s ease 1.1s both;
+  }
+
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--void);
+    border: none;
+    padding: 0.9rem 2.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: var(--white);
+    box-shadow: 0 0 30px var(--cyan-glow);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid rgba(240,240,240,0.3);
+    padding: 0.9rem 2.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-outline:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2;
+    opacity: 0.4;
+    animation: float 3s ease infinite;
+  }
+
+  .scroll-hint span {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .scroll-arrow {
+    width: 20px; height: 20px;
+    border-right: 1px solid var(--white);
+    border-bottom: 1px solid var(--white);
+    transform: rotate(45deg);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ===== TICKER ===== */
+  .ticker-wrap {
+    background: var(--void2);
+    border-top: 1px solid rgba(0,255,209,0.15);
+    border-bottom: 1px solid rgba(0,255,209,0.15);
+    padding: 0.6rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-inner:hover { animation-play-state: paused; }
+
+  .ticker-item {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    padding: 0 3rem;
+    text-transform: uppercase;
+  }
+
+  .ticker-item .tick-label { color: var(--cyan); margin-right: 0.5rem; }
+  .ticker-item .tick-up { color: #00FF88; }
+  .ticker-item .tick-down { color: var(--red); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ===== SECTION BASE ===== */
+  section {
+    padding: 7rem 4rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-label::before {
+    content: '// ';
+    color: var(--gold);
+  }
+
+  /* ===== MANIFESTO ===== */
+  #manifesto {
+    background: var(--void2);
+    border-top: 1px solid var(--grid);
+  }
+
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  .manifesto-number {
+    font-size: clamp(6rem, 15vw, 13rem);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0,255,209,0.15);
+    line-height: 1;
+    font-family: var(--font-display);
+    pointer-events: none;
+  }
+
+  .manifesto-lines { display: flex; flex-direction: column; gap: 2rem; }
+
+  .manifesto-line {
+    border-left: 2px solid var(--gold);
+    padding-left: 1.5rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.6s ease;
+  }
+
+  .manifesto-line.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .manifesto-line h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .manifesto-line p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== FLAME WOW SECTION ===== */
+  #signal {
+    text-align: center;
+    background: var(--void);
+    overflow: hidden;
+  }
+
+  .signal-inner { position: relative; max-width: 800px; margin: 0 auto; }
+
+  .flame-container {
+    position: relative;
+    width: 200px;
+    height: 280px;
+    margin: 3rem auto;
+    cursor: pointer;
+  }
+
+  .flame-container:hover .flame-svg { transform: scale(1.1); }
+
+  .flame-svg {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 0 30px #FF6B00) drop-shadow(0 0 60px #FF3C3C80);
+  }
+
+  .signal-headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .signal-headline em {
+    font-style: normal;
+    color: var(--cyan);
+  }
+
+  .signal-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+  }
+
+  /* Typewriter output */
+  #typewriter-box {
+    background: var(--void2);
+    border: 1px solid rgba(0,255,209,0.2);
+    padding: 1.5rem 2rem;
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--cyan);
+    line-height: 1.9;
+    min-height: 140px;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  #typewriter-box::before {
+    content: '> LIBERTAS_MANIFESTO.exe';
+    display: block;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 8px; height: 1em;
+    background: var(--cyan);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ===== NODES SECTION ===== */
+  #nodes {
+    background: var(--void2);
+    border-top: 1px solid var(--grid);
+  }
+
+  .nodes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+  }
+
+  .nodes-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .nodes-title span { color: var(--cyan); }
+
+  .nodes-count {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: right;
+    letter-spacing: 0.1em;
+  }
+
+  .nodes-count strong {
+    display: block;
+    font-size: 2rem;
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-weight: 900;
+  }
+
+  .nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: rgba(0,255,209,0.08);
+    border: 1px solid rgba(0,255,209,0.08);
+  }
+
+  .node-card {
+    background: var(--void2);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .node-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan-dim);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .node-card:hover::before { opacity: 1; }
+  .node-card:hover .node-id { color: var(--cyan); }
+
+  .node-id {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+
+  .node-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.05em;
+  }
+
+  .node-status {
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .node-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #00FF88;
+    flex-shrink: 0;
+  }
+
+  /* ===== BLOCKCHAIN LIVE SIM ===== */
+  #chain-sim {
+    background: var(--void);
+    border-top: 1px solid var(--grid);
+  }
+
+  .chain-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .chain-title span { color: var(--cyan); }
+
+  .chain-subtitle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    letter-spacing: 0.1em;
+  }
+
+  .block-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    max-height: 320px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .block-stream::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(transparent, var(--void));
+    pointer-events: none;
+  }
+
+  .block-row {
+    display: grid;
+    grid-template-columns: 80px 160px 1fr 100px;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--void2);
+    border-left: 2px solid transparent;
+    transition: all 0.4s ease;
+    align-items: center;
+  }
+
+  .block-row.new-block {
+    border-left-color: var(--cyan);
+    background: rgba(0,255,209,0.06);
+    animation: slideIn 0.4s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .block-num { color: var(--gold); font-weight: 700; }
+  .block-hash { color: var(--cyan); opacity: 0.7; font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .block-msg { color: var(--white); opacity: 0.8; font-size: 0.7rem; }
+  .block-time { color: var(--muted); font-size: 0.65rem; text-align: right; }
+
+  .chain-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .chain-stat { display: flex; flex-direction: column; gap: 0.3rem; }
+  .chain-stat-label { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .chain-stat-value { font-size: 1.4rem; font-weight: 700; color: var(--cyan); font-family: var(--font-display); }
+
+  /* ===== CTA ===== */
+  #cta {
+    text-align: center;
+    background: var(--void2);
+    border-top: 1px solid var(--grid);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cta::before {
+    content: 'LIBERTAS';
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 30vw;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0,255,209,0.04);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .cta-content { position: relative; z-index: 1; }
+
+  .cta-headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.95;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-headline .accent { color: var(--cyan); }
+
+  .cta-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 3rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  .cta-note {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    opacity: 0.5;
+  }
+
+  /* ===== EASTER EGG ===== */
+  #egg-trigger {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,255,209,0.2);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: all 0.3s;
+    font-size: 14px;
+    color: rgba(0,255,209,0.3);
+  }
+
+  #egg-trigger:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  #egg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3,3,8,0.97);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  #egg-overlay.active { display: flex; }
+
+  .egg-code {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    color: var(--cyan);
+    text-align: center;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    max-width: 600px;
+    padding: 2rem;
+    border: 1px solid rgba(0,255,209,0.2);
+  }
+
+  .egg-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 900;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .egg-close {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.5rem 1.5rem;
+    background: none;
+    color: var(--white);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .egg-close:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--void);
+    border-top: 1px solid var(--grid);
+    padding: 3rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-brand {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--white);
+  }
+
+  .footer-brand span { color: var(--cyan); }
+
+  .footer-meta {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .footer-meta a { color: var(--cyan); text-decoration: none; }
+  .footer-meta a:hover { text-decoration: underline; }
+
+  .footer-copy {
+    font-size: 0.65rem;
+    color: rgba(85,102,119,0.5);
+    letter-spacing: 0.1em;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid var(--grid);
+    padding-top: 2rem;
+    margin-top: 1rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    #hero { padding: 6rem 1.5rem 4rem; }
+    section { padding: 5rem 1.5rem; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+
+    .manifesto-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .manifesto-number { display: none; }
+
+    .block-row {
+      grid-template-columns: 60px 1fr;
+      gap: 0.5rem;
+    }
+
+    .block-hash, .block-time { display: none; }
+
+    .chain-stats { gap: 1.5rem; }
+
+    footer {
+      padding: 2rem 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-meta { text-align: left; }
+
+    .nodes-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+
+  /* ===== GLITCH TEXT ===== */
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    pointer-events: none;
+  }
+
+  .glitch::before {
+    color: var(--red);
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    transform: translate(-3px, 0);
+    animation: glitch1 4s steps(1) infinite;
+  }
+
+  .glitch::after {
+    color: var(--cyan);
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    transform: translate(3px, 0);
+    animation: glitch2 4s steps(1) infinite;
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0, 0); opacity: 0; }
+    92% { transform: translate(-4px, 1px); opacity: 1; }
+    94% { transform: translate(3px, -1px); opacity: 1; }
+    96% { transform: translate(-2px, 0); opacity: 1; }
+  }
+
+  @keyframes glitch2 {
+    0%, 90%, 100% { transform: translate(0, 0); opacity: 0; }
+    91% { transform: translate(4px, -1px); opacity: 1; }
+    93% { transform: translate(-3px, 1px); opacity: 1; }
+    95% { transform: translate(2px, 0); opacity: 1; }
+  }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Section -->
-        <h1>$LIBERTY</h1>
-        <p>Version [Your Version Name Here]</p>
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-logo">LIBERTAS<span>.</span>PROTOCOL</div>
+  <ul class="nav-links">
+    <li><a href="#manifesto">Manifesto</a></li>
+    <li><a href="#signal">Signal</a></li>
+    <li><a href="#chain-sim">Chain</a></li>
+    <li><a href="#cta">Join</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span id="node-live-count">0</span>&nbsp;nodes live
+  </div>
+</nav>
 
-        <!-- Main Content Placeholder -->
-        <div class="content-area">
-            <p class="placeholder-text">
-                "Your content goes here.<br>
-                Replace this box with your amazing design, memes, and links."
-            </p>
-        </div>
+<!-- HERO -->
+<section id="hero">
+  <canvas id="particle-canvas"></canvas>
 
-        <!-- Credit / Portfolio Section -->
-        <div class="credit-footer">
-            <p>Created by: <a href="#">[Your Name / Portfolio Link]</a></p>
-            <p>Contract: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</p>
-        </div>
+  <div class="hero-content">
+    <div class="hero-badge">▲ &nbsp;Decentralized &nbsp;/&nbsp; Autonomous &nbsp;/&nbsp; Unstoppable</div>
+    <h1 class="hero-headline">
+      <div class="line-white">BREAK</div>
+      <div class="line-gold glitch" data-text="FREE.">FREE.</div>
+      <div class="line-cyan">STAY FREE.</div>
+    </h1>
+    <p class="hero-sub">
+      No server owns your voice.&nbsp;
+      No corporation owns your identity.&nbsp;
+      No authority controls your signal.&nbsp;
+      The Libertas Protocol is not a product — it is a right.
+    </p>
+    <div class="hero-cta-row">
+      <a href="#signal" class="btn-primary">IGNITE THE SIGNAL</a>
+      <a href="#manifesto" class="btn-outline">READ THE CODE</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- LIVE TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner" id="ticker-inner"></div>
+</div>
+
+<!-- MANIFESTO -->
+<section id="manifesto">
+  <div class="section-label">manifesto</div>
+  <div class="manifesto-grid">
+    <div class="manifesto-number">Ø1</div>
+    <div class="manifesto-lines">
+      <div class="manifesto-line">
+        <h3>Sovereignty is default.</h3>
+        <p>You were born free. No company gave you that. No government either. Every system that requires your obedience to function is a system built on borrowed time.</p>
+      </div>
+      <div class="manifesto-line">
+        <h3>Encryption is speech.</h3>
+        <p>When we encrypt, we whisper truths the powerful do not want heard. A cipher is not a crime. A firewall is not a weapon. Privacy is not suspicious — it is sacred.</p>
+      </div>
+      <div class="manifesto-line">
+        <h3>Decentralize everything.</h3>
+        <p>Every single point of failure is a single point of control. When you eliminate the center, you eliminate the censor. No headquarters. No kill switch. No silence.</p>
+      </div>
+      <div class="manifesto-line">
+        <h3>The chain remembers.</h3>
+        <p>Truth, once written to the ledger, cannot be erased. History, once distributed, cannot be revised. The protocol outlasts empires. The signal outlasts the noise.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNAL / FLAME WOW SECTION -->
+<section id="signal">
+  <div class="signal-inner">
+    <div class="section-label reveal">the signal</div>
+    <h2 class="signal-headline reveal">
+      ONE <em>FLAME.</em><br>
+      A MILLION<br>
+      NODES.
+    </h2>
+
+    <!-- Animated SVG Flame -->
+    <div class="flame-container reveal" id="flame-wrap" title="Click to ignite the manifesto">
+      <svg class="flame-svg" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg" id="flame-svg">
+        <defs>
+          <radialGradient id="flameCore" cx="50%" cy="80%" r="50%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+            <stop offset="40%" stop-color="#FFE566"/>
+            <stop offset="70%" stop-color="#FF6B00"/>
+            <stop offset="100%" stop-color="#FF3C3C" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="flameOuter" cx="50%" cy="90%" r="50%">
+            <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#FF3C3C" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="baseGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00FFD1" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#00FFD1" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Base glow -->
+        <ellipse cx="100" cy="250" rx="70" ry="20" fill="url(#baseGlow)"/>
+
+        <!-- Torch body -->
+        <rect x="88" y="200" width="24" height="60" rx="4" fill="#1A1A2E"/>
+        <rect x="90" y="200" width="20" height="4" rx="2" fill="#2A2A4E"/>
+
+        <!-- Outer flame layer (animated) -->
+        <path id="flame-outer" d="M100 200 C80 170, 55 130, 65 90 C70 60, 85 40, 100 20 C115 40, 130 60, 135 90 C145 130, 120 170, 100 200Z" fill="url(#flameOuter)">
+          <animateTransform attributeName="transform" type="scale" values="1,1;1.06,0.97;0.97,1.04;1.02,0.98;1,1" dur="2.5s" repeatCount="indefinite" additive="sum" origin="100 200"/>
+        </path>
+
+        <!-- Mid flame layer -->
+        <path id="flame-mid" d="M100 200 C84 178, 62 148, 70 108 C75 78, 90 52, 100 30 C110 52, 125 78, 130 108 C138 148, 116 178, 100 200Z" fill="url(#flameCore)">
+          <animateTransform attributeName="transform" type="skewX" values="0;3;-3;2;0" dur="1.8s" repeatCount="indefinite" additive="sum" origin="100 200"/>
+          <animate attributeName="opacity" values="1;0.85;1" dur="1.5s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Inner bright flame -->
+        <path d="M100 195 C92 175, 78 150, 84 118 C88 96, 96 70, 100 50 C104 70, 112 96, 116 118 C122 150, 108 175, 100 195Z" fill="#FFFDE7" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.7;0.9" dur="1.1s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Spark particles -->
+        <circle r="2" fill="#FFE566" opacity="0">
+          <animateMotion dur="1.6s" repeatCount="indefinite" path="M100,150 C90,120 80,100 75,70"/>
+          <animate attributeName="opacity" values="0;1;0" dur="1.6s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;1;0" dur="1.6s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="2" fill="#FF6B00" opacity="0">
+          <animateMotion dur="2.1s" repeatCount="indefinite" path="M100,150 C115,115 125,95 130,60"/>
+          <animate attributeName="opacity" values="0;0.8;0" dur="2.1s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;1.5;0" dur="2.1s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="1.5" fill="#FFFFFF" opacity="0">
+          <animateMotion dur="1.3s" repeatCount="indefinite" path="M100,140 C94,110 88,90 82,55"/>
+          <animate attributeName="opacity" values="0;1;0" dur="1.3s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="1.5" fill="#00FFD1" opacity="0">
+          <animateMotion dur="1.9s" repeatCount="indefinite" path="M100,145 C112,112 120,88 118,45"/>
+          <animate attributeName="opacity" values="0;0.9;0" dur="1.9s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
     </div>
 
+    <p class="signal-sub reveal">Click the flame. The manifesto begins.</p>
+
+    <!-- Typewriter terminal -->
+    <div id="typewriter-box" class="reveal">
+      <span id="typewriter-text"></span><span class="cursor-blink"></span>
+    </div>
+  </div>
+</section>
+
+<!-- NETWORK NODES -->
+<section id="nodes">
+  <div class="nodes-header reveal">
+    <div>
+      <div class="section-label">live network</div>
+      <h2 class="nodes-title">SOVEREIGN<br><span>NODES</span></h2>
+    </div>
+    <div class="nodes-count">
+      <strong id="live-nodes-big">—</strong>
+      active validators
+    </div>
+  </div>
+
+  <div class="nodes-grid reveal" id="nodes-grid"></div>
+</section>
+
+<!-- BLOCKCHAIN LIVE SIM -->
+<section id="chain-sim">
+  <div class="section-label reveal">live ledger simulation</div>
+  <h2 class="chain-title reveal">THE <span>CHAIN</span><br>NEVER LIES.</h2>
+  <p class="chain-subtitle reveal">Every block is a vote. Every hash is a truth. Immutable. Distributed. Free.</p>
+
+  <div class="block-stream reveal" id="block-stream"></div>
+
+  <div class="chain-stats reveal">
+    <div class="chain-stat">
+      <span class="chain-stat-label">Block Height</span>
+      <span class="chain-stat-value" id="stat-height">—</span>
+    </div>
+    <div class="chain-stat">
+      <span class="chain-stat-label">TPS</span>
+      <span class="chain-stat-value" id="stat-tps">—</span>
+    </div>
+    <div class="chain-stat">
+      <span class="chain-stat-label">Active Wallets</span>
+      <span class="chain-stat-value" id="stat-wallets">—</span>
+    </div>
+    <div class="chain-stat">
+      <span class="chain-stat-label">Data Shielded</span>
+      <span class="chain-stat-value" id="stat-data">—</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-content">
+    <div class="section-label reveal">the uprising</div>
+    <h2 class="cta-headline reveal">
+      THE FUTURE<br>
+      IS <span class="accent">OURS.</span>
+    </h2>
+    <p class="cta-sub reveal">
+      This is not a revolution — it is a restoration. Of what was always yours. Your data. Your identity. Your sovereignty.
+    </p>
+    <div class="cta-buttons reveal">
+      <a href="#hero" class="btn-primary">JOIN THE PROTOCOL</a>
+      <a href="#manifesto" class="btn-outline">READ THE MANIFESTO</a>
+    </div>
+    <p class="cta-note reveal">NO REGISTRATION &nbsp;·&nbsp; NO TRACKING &nbsp;·&nbsp; NO MASTERS</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">LIBERTAS<span>.</span>PROTOCOL</div>
+    <p style="font-size:0.65rem; color:var(--muted); margin-top:0.5rem; letter-spacing:0.1em;">
+      Forged in resistance. Anchored in truth.
+    </p>
+  </div>
+  <div class="footer-meta">
+    SUPREME HTML CODER IMPERIUS<br>
+    <span style="color:var(--muted)">Contest Entry — Theme: LIBERTY<br></span>
+    <a href="https://x.com/joel_udoji"> Contact Creator On X (Twitter): CyberSpectre </a> &nbsp;·&nbsp; Built with pure HTML/CSS/JS
+    <a href="https://github.com/Udojijoel">Github: Udoji Joel</a>
+  </div>
+  <p class="footer-copy">
+    NO COPYRIGHT. NO RESTRICTION. COPY, FORK, DISTRIBUTE FREELY. THIS SIGNAL BELONGS TO EVERYONE. ∞
+  </p>
+</footer>
+
+<!-- EASTER EGG TRIGGER -->
+<button id="egg-trigger" title="..." aria-label="Secret">⊕</button>
+
+<!-- EASTER EGG OVERLAY -->
+<div id="egg-overlay" role="dialog" aria-modal="true">
+  <div class="egg-title">YOU FOUND IT.</div>
+  <div class="egg-code">
+    <pre id="egg-text"></pre>
+  </div>
+  <button class="egg-close" id="egg-close">CLOSE TRANSMISSION</button>
+</div>
+
+<script>
+/* ===== PARTICLE CANVAS (HERO BACKGROUND) ===== */
+(function(){
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = {x: -9999, y: -9999};
+
+  function resize(){
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function Particle(){
+    this.reset();
+  }
+
+  Particle.prototype.reset = function(){
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.r = Math.random() * 1.5 + 0.3;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.7 ? '#00FFD1' : Math.random() > 0.5 ? '#FFD700' : '#F0F0F0';
+  };
+
+  Particle.prototype.update = function(){
+    this.x += this.vx;
+    this.y += this.vy;
+    const dx = this.x - mouse.x, dy = this.y - mouse.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 80){
+      this.x += dx/dist * 1.2;
+      this.y += dy/dist * 1.2;
+    }
+    if(this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  };
+
+  function init(){
+    resize();
+    particles = [];
+    const count = Math.min(Math.floor(W * H / 6000), 200);
+    for(let i = 0; i < count; i++) particles.push(new Particle());
+  }
+
+  function drawLines(){
+    for(let i = 0; i < particles.length; i++){
+      for(let j = i+1; j < particles.length; j++){
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if(d < 90){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(0,255,209,' + (0.12 * (1 - d/90)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    drawLines();
+    particles.forEach(p => {
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+  canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  init();
+  draw();
+})();
+
+/* ===== TICKER ===== */
+(function(){
+  const items = [
+    {label:'LBT/USD', val:'1.0000', chg:'+0.00%', up:true},
+    {label:'FREEDOM INDEX', val:'∞', chg:'RISING', up:true},
+    {label:'CENSORED NODES', val:'0', chg:'-100%', up:true},
+    {label:'ENCRYPTED MSGS', val:'4.2B', chg:'+18.4%', up:true},
+    {label:'SOVEREIGN WALLETS', val:'12.7M', chg:'+3.1%', up:true},
+    {label:'BLOCKS MINED', val:'9,341,002', chg:'+1', up:true},
+    {label:'SURVEILLANCE BYPASS', val:'88.3%', chg:'+2.7%', up:true},
+    {label:'TRUTH HASH', val:'0x4f1...', chg:'VERIFIED', up:true},
+    {label:'AUTHORITY UPTIME', val:'0%', chg:'-100%', up:false},
+  ];
+  const container = document.getElementById('ticker-inner');
+  const html = items.map(i =>
+    `<span class="ticker-item">
+      <span class="tick-label">${i.label}</span>
+      ${i.val}&nbsp;
+      <span class="${i.up ? 'tick-up' : 'tick-down'}">${i.chg}</span>
+    </span>`
+  ).join('');
+  container.innerHTML = html + html;
+})();
+
+/* ===== SCROLL REVEAL ===== */
+(function(){
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+      }
+    });
+  }, {threshold: 0.15});
+
+  document.querySelectorAll('.reveal, .manifesto-line').forEach(el => observer.observe(el));
+})();
+
+/* ===== LIVE NODE COUNT ===== */
+(function(){
+  let count = 12487;
+  function update(){
+    const delta = Math.floor((Math.random()-0.3) * 5);
+    count = Math.max(12000, count + delta);
+    const fmt = count.toLocaleString();
+    document.getElementById('node-live-count').textContent = fmt;
+    document.getElementById('live-nodes-big').textContent = fmt;
+  }
+  update();
+  setInterval(update, 3000);
+})();
+
+/* ===== NODES GRID ===== */
+(function(){
+  const names = [
+    'ANON.ALPHA','ZERO.NINE','GHOST.7','CIPHER.X','NULL.ECHO',
+    'VOID.PRIME','DARK.FIBER','EXODUS.3','SIGNAL.K','FREE.NODE',
+    'MASK.V','SATOSHI.21','NAKAMOTO.P','CYPHERPUNK.1','GENESIS.0'
+  ];
+  const cities = ['Reykjavik','Tbilisi','Zagreb','Tallinn','Riga','Vilnius','Bratislava','Ljubljana'];
+  const grid = document.getElementById('nodes-grid');
+  let html = '';
+  for(let i = 0; i < 12; i++){
+    const name = names[i % names.length];
+    const city = cities[i % cities.length];
+    const id = '0x' + Math.random().toString(16).substr(2,6).toUpperCase();
+    html += `<div class="node-card">
+      <div class="node-id">NODE #${String(i+1).padStart(4,'0')}</div>
+      <div class="node-name">${name}</div>
+      <div class="node-status"><span class="node-dot"></span>${city} · ${id}</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+})();
+
+/* ===== BLOCKCHAIN SIM ===== */
+(function(){
+  let blockHeight = 9341000;
+  let tps = 14;
+  let wallets = 12700000;
+  let dataGB = 2847;
+
+  const messages = [
+    'GENESIS BLOCK ECHO: Freedom is the protocol.',
+    'TX: sovereignty_transfer [ANON→ANON]',
+    'NODE BROADCAST: No master. No server.',
+    'VOTE: Decentralize.layer.1 [PASSED ✓]',
+    'MSG ENCRYPTED: 0x8f3a...→0x2d1b...',
+    'CONTRACT: libertas.sol DEPLOYED',
+    'TX: encrypt_identity [user→void]',
+    'BLOCK SEALED: immutable.truth.hash',
+    'PING: 12,487 nodes responding',
+    'VOTE: Remove.Central.Authority [UNANIMOUS]',
+    'TX: signal_relay [ANON→NETWORK]',
+    'AUDIT: No backdoor found. ✓',
+    'BROADCAST: The chain never lies.',
+    'TX: freedom.token MINTED ∞',
+    'NODE JOINED: cypherpunk.reyk.1',
+  ];
+
+  const stream = document.getElementById('block-stream');
+
+  function addBlock(){
+    blockHeight++;
+    tps = Math.max(8, tps + Math.round((Math.random()-0.5)*3));
+    wallets += Math.floor(Math.random()*50);
+    dataGB += Math.random() * 0.4;
+
+    const hash = '0x' + Array.from({length:8}, () => Math.floor(Math.random()*16).toString(16)).join('') + '...';
+    const msg = messages[Math.floor(Math.random() * messages.length)];
+    const now = new Date();
+    const time = now.toTimeString().substr(0,8);
+
+    const row = document.createElement('div');
+    row.className = 'block-row new-block';
+    row.innerHTML = `
+      <span class="block-num">#${blockHeight.toLocaleString()}</span>
+      <span class="block-hash">${hash}</span>
+      <span class="block-msg">${msg}</span>
+      <span class="block-time">${time}</span>
+    `;
+    stream.insertBefore(row, stream.firstChild);
+    setTimeout(() => row.classList.remove('new-block'), 600);
+
+    if(stream.children.length > 12) stream.removeChild(stream.lastChild);
+
+    document.getElementById('stat-height').textContent = blockHeight.toLocaleString();
+    document.getElementById('stat-tps').textContent = tps;
+    document.getElementById('stat-wallets').textContent = (wallets/1000000).toFixed(2) + 'M';
+    document.getElementById('stat-data').textContent = dataGB.toFixed(1) + ' TB';
+  }
+
+  for(let i = 0; i < 8; i++) addBlock();
+  setInterval(addBlock, 2200);
+})();
+
+/* ===== TYPEWRITER + FLAME INTERACTION ===== */
+(function(){
+  const lines = [
+    'LIBERTAS PROTOCOL v1.0.0 — FREEDOM BUILD',
+    '',
+    '> You are not a user. You are a sovereign.',
+    '> Your data is not a product. It is your voice.',
+    '> The network has no headquarters to bomb.',
+    '> The ledger has no editor to bribe.',
+    '> The cipher has no owner to subpoena.',
+    '',
+    '> RUN libertas --no-master --no-server --no-silence',
+    '',
+    '> SIGNAL ACTIVE. YOU ARE FREE.',
+  ];
+
+  let started = false;
+  const textEl = document.getElementById('typewriter-text');
+  const flameWrap = document.getElementById('flame-wrap');
+
+  function typeLines(linesArr, idx, charIdx){
+    if(idx >= linesArr.length) return;
+    const line = linesArr[idx];
+    if(charIdx <= line.length){
+      textEl.textContent = linesArr.slice(0, idx).join('\n') + (idx > 0 ? '\n' : '') + line.substr(0, charIdx);
+      setTimeout(() => typeLines(linesArr, idx, charIdx+1), 28);
+    } else {
+      setTimeout(() => typeLines(linesArr, idx+1, 0), 80);
+    }
+  }
+
+  flameWrap.addEventListener('click', function(){
+    if(!started){
+      started = true;
+      textEl.textContent = '';
+      typeLines(lines, 0, 0);
+      this.style.filter = 'drop-shadow(0 0 60px #FF6B00) drop-shadow(0 0 120px #FF3C3C)';
+    }
+  });
+})();
+
+/* ===== EASTER EGG ===== */
+(function(){
+  const trigger = document.getElementById('egg-trigger');
+  const overlay = document.getElementById('egg-overlay');
+  const closeBtn = document.getElementById('egg-close');
+  const eggText = document.getElementById('egg-text');
+
+  const secretCode = `
+/* THE LIBERTAS OATH */
+
+I am not a user. I am a node.
+I am not a consumer. I am a contributor.
+I hold no keys that others gave me.
+I hold keys that I generated myself.
+
+I encrypt not because I fear —
+I encrypt because I can.
+
+My identity lives on no server.
+My voice echoes through no algorithm
+that was not built by free hands.
+
+I fork. I contribute. I sign.
+I do not ask permission.
+
+The protocol does not care who I am.
+The protocol only asks:
+  Are you free?
+
+  ██████╗  ██████╗ 
+  ██╔══██╗██╔════╝ 
+  ██████╔╝██║      
+  ██╔══██╗██║      
+  ██║  ██║╚██████╗ 
+  ╚═╝  ╚═╝ ╚═════╝ 
+
+LIBERTAS. FOREVER.
+BLOCK: #∞  HASH: 0xFREE...DOM
+  `;
+
+  trigger.addEventListener('click', () => {
+    eggText.textContent = secretCode;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  overlay.addEventListener('click', e => {
+    if(e.target === overlay){
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+})();
+
+/* ===== KONAMI CODE EASTER EGG ===== */
+(function(){
+  const seq = [38,38,40,40,37,39,37,39,66,65];
+  let idx = 0;
+  document.addEventListener('keydown', e => {
+    if(e.keyCode === seq[idx]) idx++;
+    else idx = 0;
+    if(idx === seq.length){
+      idx = 0;
+      document.getElementById('egg-trigger').click();
+    }
+  });
+})();
+</script>
 </body>
 </html>
