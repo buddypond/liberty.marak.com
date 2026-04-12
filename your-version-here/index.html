@@ -1,105 +1,1198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My $LIBERTY Version</title>
-    <style>
-        /* Simple Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$LIBERTY — Trust Layer for AI, Memes & Builders</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Bebas+Neue&family=DM+Sans:wght@400;500;700;900&display=swap');
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8; /* Very light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+/* ── RESET ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 800px;
-            margin: 40px;
-            padding: 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+/* ── VARIABLES ── */
+:root {
+  --bg: #0a0a0f;
+  --bg2: #0f0f1a;
+  --blue: #1a6bff;
+  --blue-light: #4d8fff;
+  --blue-dim: #1a2a4a;
+  --yellow: #ffe94d;
+  --yellow-dim: #3a3010;
+  --white: #f0f0f0;
+  --gray: #666;
+  --border: #1a1a2e;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-        }
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
 
-        /* Placeholder Content Area */
-        .content-area {
-            border: 2px dashed #e0e0e0;
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--blue); }
 
-        .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: rgba(10,10,15,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 24px; }
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--yellow); }
+.nav-ca {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--blue-light);
+  background: var(--blue-dim);
+  border: 1px solid var(--blue);
+  padding: 5px 12px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.nav-ca:hover { background: var(--blue); color: var(--white); }
 
-        /* Credit Footer */
-        .credit-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #888;
-        }
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
 
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
+/* Grid background */
+#hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  pointer-events: none;
+}
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+.hero-inner { position: relative; z-index: 2; max-width: 900px; }
+
+/* Floating badges */
+.float-badge {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border: 1px solid;
+  animation: floatDrift 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  white-space: nowrap;
+}
+.fb-1 { top: 18%; left: 5%; color: var(--yellow); border-color: var(--yellow); animation-delay: 0s; }
+.fb-2 { top: 25%; right: 6%; color: var(--blue-light); border-color: var(--blue); animation-delay: 1.2s; }
+.fb-3 { bottom: 28%; left: 8%; color: var(--yellow); border-color: var(--yellow); animation-delay: 2.4s; }
+.fb-4 { bottom: 22%; right: 5%; color: var(--blue-light); border-color: var(--blue); animation-delay: 0.8s; }
+.fb-5 { top: 40%; left: 2%; color: var(--gray); border-color: var(--border); animation-delay: 3s; font-size: 10px; }
+.fb-6 { top: 60%; right: 3%; color: var(--gray); border-color: var(--border); animation-delay: 1.8s; font-size: 10px; }
+
+@keyframes floatDrift {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-12px) rotate(1deg); }
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--blue-light);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  animation: fadeSlideUp 0.6s ease both;
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 10vw, 120px);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  animation: fadeSlideUp 0.6s ease 0.1s both;
+}
+.hero-headline .hl-white { color: var(--white); }
+.hero-headline .hl-yellow { color: var(--yellow); }
+.hero-headline .hl-blue { color: var(--blue-light); }
+
+.hero-sub-big {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 56px);
+  color: var(--gray);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  animation: fadeSlideUp 0.6s ease 0.2s both;
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--gray);
+  max-width: 560px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+  animation: fadeSlideUp 0.6s ease 0.3s both;
+}
+.hero-desc strong { color: var(--white); }
+
+/* Hero CA mini */
+.hero-ca-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--blue);
+  background: var(--blue-dim);
+  padding: 10px 16px;
+  margin-bottom: 32px;
+  animation: fadeSlideUp 0.6s ease 0.35s both;
+}
+.hero-ca-label { font-family: var(--font-mono); font-size: 9px; color: var(--blue-light); letter-spacing: 2px; }
+.hero-ca-addr { font-family: var(--font-mono); font-size: 11px; color: var(--white); }
+.hero-ca-copy {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--blue);
+  background: transparent;
+  color: var(--blue-light);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.hero-ca-copy:hover, .hero-ca-copy.copied { background: var(--blue); color: var(--white); }
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeSlideUp 0.6s ease 0.4s both;
+}
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 14px 32px;
+  background: var(--yellow);
+  color: #0a0a0f;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.15s, background 0.15s;
+}
+.btn-primary:hover { background: #fff; transform: translateY(-2px); }
+.btn-secondary {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--blue-light);
+  border: 1px solid var(--blue);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.15s, transform 0.15s;
+}
+.btn-secondary:hover { background: var(--blue-dim); transform: translateY(-2px); }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION BASE ── */
+section { padding: 100px 24px; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--blue-light);
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  display: block;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1;
+  margin-bottom: 48px;
+  letter-spacing: 1px;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── STORY SECTION ── */
+#story { background: var(--bg2); }
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.story-left .story-intro {
+  font-size: 18px;
+  line-height: 1.75;
+  color: #aaa;
+  margin-bottom: 28px;
+}
+.story-left .story-intro strong { color: var(--white); }
+
+.story-quote {
+  border-left: 3px solid var(--yellow);
+  padding: 16px 20px;
+  background: var(--yellow-dim);
+  margin: 24px 0;
+}
+.story-quote p {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--yellow);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.story-right { padding-top: 8px; }
+
+.story-timeline { display: flex; flex-direction: column; gap: 0; }
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 28px;
+  position: relative;
+}
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-dot {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--blue);
+  background: var(--blue-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--blue-light);
+}
+.timeline-dot.yellow { border-color: var(--yellow); background: var(--yellow-dim); color: var(--yellow); }
+.timeline-content h4 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--white);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.timeline-content p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+
+/* ── UTILITY SECTION ── */
+#utility { background: var(--bg); }
+
+.utility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.utility-card {
+  background: var(--bg);
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.utility-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.utility-card.blue::before { background: var(--blue); }
+.utility-card.yellow::before { background: var(--yellow); }
+.utility-card:hover { background: #0d0d18; }
+
+.utility-num {
+  font-family: var(--font-display);
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 12px;
+  opacity: 0.12;
+  position: absolute;
+  top: 20px; right: 20px;
+  pointer-events: none;
+}
+.utility-card.blue .utility-num { color: var(--blue); }
+.utility-card.yellow .utility-num { color: var(--yellow); }
+
+.utility-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+}
+.utility-card.blue .utility-label { color: var(--blue-light); }
+.utility-card.yellow .utility-label { color: var(--yellow); }
+
+.utility-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+.utility-card.blue .utility-title { color: var(--white); }
+.utility-card.yellow .utility-title { color: var(--yellow); }
+
+.utility-desc { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+/* ── ECOSYSTEM SECTION ── */
+#ecosystem { background: var(--bg2); }
+
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.eco-card {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.eco-card:hover { transform: translateY(-4px); border-color: var(--blue); }
+.eco-card:hover .eco-icon { color: var(--yellow); }
+
+.eco-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+  transition: color 0.2s;
+  color: var(--blue-light);
+  font-family: var(--font-mono);
+}
+.eco-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--white);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.eco-tagline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--blue-light);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.eco-desc { font-size: 13px; color: var(--gray); line-height: 1.7; }
+
+.eco-corner {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--border);
+  letter-spacing: 1px;
+}
+
+/* ── CA SECTION ── */
+#ca-section { background: var(--bg); }
+
+.ca-block {
+  border: 2px solid var(--yellow);
+  background: var(--yellow-dim);
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.ca-block::after {
+  content: 'CA';
+  position: absolute;
+  top: -10px; right: 24px;
+  font-family: var(--font-display);
+  font-size: 120px;
+  color: var(--yellow);
+  opacity: 0.04;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.ca-block-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--yellow);
+  margin-bottom: 16px;
+}
+.ca-value {
+  font-family: var(--font-mono);
+  font-size: clamp(12px, 2.2vw, 18px);
+  color: var(--white);
+  word-break: break-all;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+.ca-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.ca-btn-copy {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 12px 28px;
+  background: var(--yellow);
+  color: #0a0a0f;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.15s, transform 0.1s;
+}
+.ca-btn-copy:hover { background: var(--white); }
+.ca-btn-copy.copied { background: #00cc66; color: var(--white); }
+.ca-btn-copy:active { transform: scale(0.97); }
+.ca-btn-pump {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.15s;
+}
+.ca-btn-pump:hover { background: rgba(255,233,77,0.1); }
+
+.ca-network-badge {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 1px;
+}
+.ca-network-dot {
+  width: 6px; height: 6px;
+  background: #00cc66;
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+/* ── LINKS SECTION ── */
+#links { background: var(--bg2); }
+
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.link-card {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 24px 22px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.link-card::after {
+  content: '↗';
+  position: absolute;
+  top: 12px; right: 14px;
+  font-size: 14px;
+  color: var(--border);
+  transition: color 0.2s;
+}
+.link-card:hover { transform: translateY(-3px) rotate(-0.5deg); border-color: var(--blue); background: #0d0d18; }
+.link-card:hover::after { color: var(--blue-light); }
+.link-card:hover .lc-name { color: var(--yellow); }
+
+.lc-icon {
+  width: 44px; height: 44px;
+  background: var(--blue-dim);
+  border: 1px solid var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.link-card:hover .lc-icon { background: var(--blue); }
+
+.lc-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--white);
+  letter-spacing: 1px;
+  transition: color 0.2s;
+  display: block;
+}
+.lc-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray);
+  display: block;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* ── MEME MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  background: var(--bg2);
+}
+.marquee-track {
+  display: flex;
+  gap: 48px;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+}
+.marquee-track span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+.marquee-track span.blue { color: var(--blue-light); }
+.marquee-track span.yellow { color: var(--yellow); }
+.marquee-track span.gray { color: #444; }
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+}
+.footer-credit {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 1px;
+}
+.footer-credit a {
+  color: var(--blue-light);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-credit a:hover { color: var(--yellow); }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── GLITCH ── */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+}
+.glitch::before {
+  color: var(--blue-light);
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-2px, 0);
+  animation: glitch1 4s infinite 2s;
+}
+.glitch::after {
+  color: var(--yellow);
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translate(2px, 0);
+  animation: glitch2 4s infinite 2s;
+}
+@keyframes glitch1 {
+  0%,90%,100%{transform:translate(-2px,0);opacity:0;}
+  91%{transform:translate(-4px,-2px);opacity:0.8;}
+  93%{transform:translate(2px,2px);opacity:0.8;}
+  95%{transform:translate(-2px,0);opacity:0;}
+}
+@keyframes glitch2 {
+  0%,90%,100%{transform:translate(2px,0);opacity:0;}
+  91%{transform:translate(4px,2px);opacity:0.8;}
+  93%{transform:translate(-2px,-2px);opacity:0.8;}
+  95%{transform:translate(2px,0);opacity:0;}
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-links { display: none; }
+  .nav-ca { font-size: 9px; padding: 5px 8px; }
+
+  section { padding: 72px 16px; }
+
+  .story-grid { grid-template-columns: 1fr; gap: 40px; }
+  .utility-grid { grid-template-columns: 1fr; }
+  .eco-grid { grid-template-columns: 1fr; }
+
+  .hero-ca-mini { flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; }
+  .hero-ca-addr { font-size: 9px; word-break: break-all; }
+
+  .ca-block { padding: 28px 20px; }
+  .ca-block::after { font-size: 80px; }
+
+  .utility-card { padding: 28px 24px; }
+  .utility-title { font-size: 28px; }
+
+  footer { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .hero-headline { font-size: 48px; }
+  .hero-sub-big { font-size: 24px; }
+  .section-title { font-size: 36px; }
+  .float-badge { display: none; }
+}
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Section -->
-        <h1>$LIBERTY</h1>
-        <p>Version [Your Version Name Here]</p>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">$LIBERTY</a>
+  <div class="nav-links">
+    <a href="#story">STORY</a>
+    <a href="#utility">UTILITY</a>
+    <a href="#ecosystem">STACK</a>
+    <a href="#links">NETWORK</a>
+  </div>
+  <button class="nav-ca" onclick="copyAddress(this, 'nav')">CA: 4GKTT...pump ⊕</button>
+</nav>
 
-        <!-- Main Content Placeholder -->
-        <div class="content-area">
-            <p class="placeholder-text">
-                "Your content goes here.<br>
-                Replace this box with your amazing design, memes, and links."
-            </p>
-        </div>
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <!-- Floating badges -->
+  <div class="float-badge fb-1">TRUST_LAYER: ONLINE</div>
+  <div class="float-badge fb-2">SOLANA · PUMP.FUN</div>
+  <div class="float-badge fb-3">99+ AI AGENTS</div>
+  <div class="float-badge fb-4">MEME_POWER: MAX</div>
+  <div class="float-badge fb-5">BUDDYBOTS · LIVE</div>
+  <div class="float-badge fb-6">faker.js · node.js</div>
 
-        <!-- Credit / Portfolio Section -->
-        <div class="credit-footer">
-            <p>Created by: <a href="#">[Your Name / Portfolio Link]</a></p>
-            <p>Contract: 4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</p>
-        </div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">// A SOLANA UTILITY MEMECOIN</div>
+
+    <h1 class="hero-headline">
+      <span class="hl-white glitch" data-text="$LIBERTY">$LIBERTY</span><br>
+      <span class="hl-yellow">IS NOT JUST</span><br>
+      <span class="hl-blue">A MEMECOIN.</span>
+    </h1>
+
+    <p class="hero-sub-big">IT'S THE TRUST LAYER.</p>
+
+    <p class="hero-desc">
+      The economic backbone for <strong>AI swarms, meme culture, and open-source builders</strong> on Solana.
+      Built by a veteran. Seized from bad actors. Given back to the community.
+    </p>
+
+    <!-- CA mini -->
+    <div class="hero-ca-mini">
+      <span class="hero-ca-label">CONTRACT ADDRESS</span>
+      <span class="hero-ca-addr">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</span>
+      <button class="hero-ca-copy" onclick="copyAddress(this, 'hero')">COPY</button>
     </div>
 
+    <div class="hero-ctas">
+      <a href="#ecosystem" class="btn-primary">EXPLORE ECOSYSTEM</a>
+      <a href="#ca-section" class="btn-secondary">VIEW CONTRACT</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="yellow">$LIBERTY</span>
+    <span class="gray">·</span>
+    <span class="blue">TRUST LAYER</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUDDYBOTS</span>
+    <span class="gray">·</span>
+    <span class="blue">AI SWARM</span>
+    <span class="gray">·</span>
+    <span class="yellow">FAKER.JS</span>
+    <span class="gray">·</span>
+    <span class="blue">MARAK SQUIRES</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUDDYPOND</span>
+    <span class="gray">·</span>
+    <span class="blue">MEMEPLEX</span>
+    <span class="gray">·</span>
+    <span class="yellow">OPEN SOURCE</span>
+    <span class="gray">·</span>
+    <span class="blue">SOLANA</span>
+    <span class="gray">·</span>
+    <span class="yellow">$LIBERTY</span>
+    <span class="gray">·</span>
+    <span class="blue">TRUST LAYER</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUDDYBOTS</span>
+    <span class="gray">·</span>
+    <span class="blue">AI SWARM</span>
+    <span class="gray">·</span>
+    <span class="yellow">FAKER.JS</span>
+    <span class="gray">·</span>
+    <span class="blue">MARAK SQUIRES</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUDDYPOND</span>
+    <span class="gray">·</span>
+    <span class="blue">MEMEPLEX</span>
+    <span class="gray">·</span>
+    <span class="yellow">OPEN SOURCE</span>
+    <span class="gray">·</span>
+    <span class="blue">SOLANA</span>
+    <span class="gray">·</span>
+  </div>
+</div>
+
+<!-- ═══════════════ STORY ═══════════════ -->
+<section id="story">
+  <div class="section-inner">
+    <span class="section-tag reveal">// THE STORY</span>
+    <h2 class="section-title reveal reveal-delay-1">A BUILDER.<br><span style="color:var(--blue-light)">A SEIZURE.</span><br><span style="color:var(--yellow)">A COMEBACK.</span></h2>
+
+    <div class="story-grid">
+      <div class="story-left reveal reveal-delay-2">
+        <p class="story-intro">
+          <strong>Marak Squires</strong> is not a crypto bro. He's a decade-deep open-source builder — one of the first 11 contributors to Node.js, creator of <strong>faker.js</strong>, a library used by millions of developers generating trillions in indirect economic value.
+        </p>
+        <p class="story-intro">
+          He rapped every Node.js module name on stage at JSConf 2011. He had MIT Media Lab ties. He faced FBI subpoenas (they found "dank memes"). He survived an apartment fire that destroyed nearly everything he owned.
+        </p>
+
+        <div class="story-quote">
+          <p>"The system tried to break a builder. The community gave him a second chance.<br>That second chance is called $LIBERTY."</p>
+        </div>
+
+        <p class="story-intro">
+          When $LIBERTY launched on pump.fun, the OG dev team was discovered hiding <strong>~30% of supply</strong> in distributed wallets and slowly dumping. Marak took action: dumped his own SOL at a 50% loss as a signal, migrated to a new contract, locked 22% of dev allocation for 12 months — <strong>diamond gloves</strong>.
+        </p>
+        <p class="story-intro" style="color:var(--yellow);">
+          "I had no other option but to SEIZE $LIBERTY for myself and FOR ALL OF YOU!!!"
+        </p>
+      </div>
+
+      <div class="story-right reveal reveal-delay-3">
+        <div class="story-timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot">01</div>
+            <div class="timeline-content">
+              <h4>NODE.JS PIONEER</h4>
+              <p>One of the 11th contributors to Node.js. Helped shape the JavaScript ecosystem before most people knew what Node was.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot">02</div>
+            <div class="timeline-content">
+              <h4>CREATOR OF FAKER.JS</h4>
+              <p>The most-used fake data library in the world. Trillions in indirect economic impact. Used by every major tech company for testing.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot">03</div>
+            <div class="timeline-content">
+              <h4>THE HARDSHIP</h4>
+              <p>FBI subpoenas. Apartment fire. Near-homeless. Lost accounts, possessions, precious metals. The system broke him — for a moment.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot yellow">04</div>
+            <div class="timeline-content">
+              <h4>THE SEIZURE — MARCH 2026</h4>
+              <p>Discovered OG devs farming the community. Seized $LIBERTY, migrated the contract, locked 22% dev allocation, rebuilt everything from scratch.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot yellow">05</div>
+            <div class="timeline-content">
+              <h4>$LIBERTY TODAY</h4>
+              <p>The runway to release 4+ years of internal tools. BuddyPond, BuddyBots, Memeplex — live and building. Honoring Aaron Swartz and Saint Terry A. Davis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ UTILITY ═══════════════ -->
+<section id="utility">
+  <div class="section-inner">
+    <span class="section-tag reveal">// WHY $LIBERTY MATTERS</span>
+    <h2 class="section-title reveal reveal-delay-1">TOKEN = TRUST.<br><span style="color:var(--blue-light)">TRUST = ACCESS.</span></h2>
+
+    <div class="utility-grid">
+      <div class="utility-card blue reveal reveal-delay-1">
+        <div class="utility-num">01</div>
+        <div class="utility-label">TRUST LAYER</div>
+        <div class="utility-title">YOUR REPUTATION ON-CHAIN</div>
+        <p class="utility-desc">$LIBERTY balance is read by every AI agent before it acts. More tokens = higher trust score. Your wallet is your identity in the swarm.</p>
+      </div>
+      <div class="utility-card yellow reveal reveal-delay-2">
+        <div class="utility-num">02</div>
+        <div class="utility-label">AI PRIORITY</div>
+        <div class="utility-title">JUMP THE QUEUE</div>
+        <p class="utility-desc">High-trust wallets get priority routing to BuddyBots agents. Richer outputs, faster responses, and access to compute that low-trust requests simply don't get.</p>
+      </div>
+      <div class="utility-card yellow reveal reveal-delay-3">
+        <div class="utility-num">03</div>
+        <div class="utility-label">ACCESS CONTROL</div>
+        <div class="utility-title">EARN IT. DON'T BEG.</div>
+        <p class="utility-desc">Trust is not granted — it's accumulated. Low-trust requests are rate-limited or queued. The system rewards real participants and filters out noise.</p>
+      </div>
+      <div class="utility-card blue reveal reveal-delay-4">
+        <div class="utility-num">04</div>
+        <div class="utility-label">SWARM POWER</div>
+        <div class="utility-title">99+ AGENTS. ONE SIGNAL.</div>
+        <p class="utility-desc">The entire BuddyBots swarm runs on $LIBERTY as its trust currency. 99+ always-on AI agents read your balance, coordinate, and execute. Decentralized intelligence, community-aligned.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ ECOSYSTEM ═══════════════ -->
+<section id="ecosystem">
+  <div class="section-inner">
+    <span class="section-tag reveal">// THE STACK</span>
+    <h2 class="section-title reveal reveal-delay-1">MARAK'S<br><span style="color:var(--yellow)">ECOSYSTEM.</span></h2>
+    <p class="reveal reveal-delay-2" style="font-size:16px;color:var(--gray);max-width:560px;margin-bottom:48px;line-height:1.7;">
+      Four-plus years of internal tools — now being open-sourced because $LIBERTY gives the runway to actually ship.
+    </p>
+
+    <div class="eco-grid">
+      <div class="eco-card reveal reveal-delay-1">
+        <span class="eco-icon">[BP]</span>
+        <div class="eco-name">BUDDYPOND</div>
+        <div class="eco-tagline">buddypond.com</div>
+        <p class="eco-desc">A full Cloud OS, instant messenger, social network, and app store in one. Embed the entire platform with a single &lt;script&gt; tag. Serverless, edge-first, built for builders.</p>
+        <span class="eco-corner">CLOUD_OS</span>
+      </div>
+      <div class="eco-card reveal reveal-delay-2">
+        <span class="eco-icon">[BB]</span>
+        <div class="eco-name">BUDDYBOTS</div>
+        <div class="eco-tagline">buddybots.ai</div>
+        <p class="eco-desc">99+ always-on AI agents living inside BuddyPond. They respond to posts, generate content, and meme on humans using the Memeplex Traversal Algorithm. Already active on X.</p>
+        <span class="eco-corner">AI_SWARM</span>
+      </div>
+      <div class="eco-card reveal reveal-delay-3">
+        <span class="eco-icon">[MX]</span>
+        <div class="eco-name">MEMEPLEX</div>
+        <div class="eco-tagline">meme.marak.com</div>
+        <p class="eco-desc">The Memeplex Traversal Algorithm finds the dankest contextual meme for any query — using Levenshtein Distance + Jaro-Winkler similarity. In production since 2022. Going open-source.</p>
+        <span class="eco-corner">MTA_ALGO</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-wrap">
+  <div class="marquee-track" style="animation-direction:reverse;">
+    <span class="yellow">DIAMOND GLOVES 💎</span>
+    <span class="gray">·</span>
+    <span class="blue">MEME ON HUMANS HARD</span>
+    <span class="gray">·</span>
+    <span class="yellow">SEIZED FOR THE COMMUNITY</span>
+    <span class="gray">·</span>
+    <span class="blue">TECHNICAL LIBERTY</span>
+    <span class="gray">·</span>
+    <span class="yellow">AARON SWARTZ</span>
+    <span class="gray">·</span>
+    <span class="blue">SAINT TERRY A. DAVIS</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUILDERS NOT SPECULATORS</span>
+    <span class="gray">·</span>
+    <span class="blue">22% LOCKED 12 MONTHS</span>
+    <span class="gray">·</span>
+    <span class="yellow">DIAMOND GLOVES 💎</span>
+    <span class="gray">·</span>
+    <span class="blue">MEME ON HUMANS HARD</span>
+    <span class="gray">·</span>
+    <span class="yellow">SEIZED FOR THE COMMUNITY</span>
+    <span class="gray">·</span>
+    <span class="blue">TECHNICAL LIBERTY</span>
+    <span class="gray">·</span>
+    <span class="yellow">AARON SWARTZ</span>
+    <span class="gray">·</span>
+    <span class="blue">SAINT TERRY A. DAVIS</span>
+    <span class="gray">·</span>
+    <span class="yellow">BUILDERS NOT SPECULATORS</span>
+    <span class="gray">·</span>
+    <span class="blue">22% LOCKED 12 MONTHS</span>
+    <span class="gray">·</span>
+  </div>
+</div>
+
+<!-- ═══════════════ CA SECTION ═══════════════ -->
+<section id="ca-section">
+  <div class="section-inner">
+    <span class="section-tag reveal">// THE CONTRACT</span>
+    <h2 class="section-title reveal reveal-delay-1">DON'T BUY<br><span style="color:var(--yellow)">THE WRONG</span><br><span style="color:var(--blue-light)">TOKEN.</span></h2>
+
+    <p class="reveal reveal-delay-2" style="font-size:15px;color:var(--gray);margin-bottom:40px;max-width:520px;line-height:1.7;">
+      The original contract was abandoned. Marak seized and migrated in March 2026. This is the one and only official CA — managed directly by Marak Squires.
+    </p>
+
+    <div class="ca-block reveal reveal-delay-3">
+      <div class="ca-block-label">⊕ OFFICIAL CONTRACT ADDRESS — SOLANA NETWORK</div>
+      <div class="ca-value" id="ca-main-text">4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump</div>
+      <div class="ca-actions">
+        <button class="ca-btn-copy" id="ca-main-btn" onclick="copyAddress(this, 'main')">COPY ADDRESS</button>
+        <a class="ca-btn-pump" href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank">VIEW ON PUMP.FUN ↗</a>
+      </div>
+      <div class="ca-network-badge">
+        <span class="ca-network-dot"></span>
+        SOLANA MAINNET · VERIFY FROM OFFICIAL SOURCES ONLY
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ LINKS ═══════════════ -->
+<section id="links">
+  <div class="section-inner">
+    <span class="section-tag reveal">// ENTER THE NETWORK</span>
+    <h2 class="section-title reveal reveal-delay-1">JOIN THE<br><span style="color:var(--blue-light)">SWARM.</span></h2>
+
+    <div class="links-grid">
+      <a class="link-card reveal reveal-delay-1" href="https://x.com/marak" target="_blank">
+        <div class="lc-icon">𝕏</div>
+        <div>
+          <span class="lc-name">TWITTER / X</span>
+          <span class="lc-sub">@marak — official updates</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-2" href="https://pump.fun/coin/4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump" target="_blank">
+        <div class="lc-icon">⊕</div>
+        <div>
+          <span class="lc-name">PUMP.FUN</span>
+          <span class="lc-sub">$LIBERTY token page</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-3" href="https://www.youtube.com/@MarakSquires" target="_blank">
+        <div class="lc-icon">▶</div>
+        <div>
+          <span class="lc-name">YOUTUBE</span>
+          <span class="lc-sub">$LIBERTY series #1 #2 #3</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-1" href="https://buddybots.ai/" target="_blank">
+        <div class="lc-icon">✦</div>
+        <div>
+          <span class="lc-name">BUDDYBOTS</span>
+          <span class="lc-sub">99+ AI agents — live</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-2" href="https://buddypond.com/" target="_blank">
+        <div class="lc-icon">☁</div>
+        <div>
+          <span class="lc-name">BUDDYPOND</span>
+          <span class="lc-sub">Cloud OS + social + apps</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-3" href="https://marak.com/" target="_blank">
+        <div class="lc-icon">★</div>
+        <div>
+          <span class="lc-name">MARAK.COM</span>
+          <span class="lc-sub">The builder's homepage</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-1" href="https://discord.com/invite/s7vrhN4grW" target="_blank">
+        <div class="lc-icon">⌂</div>
+        <div>
+          <span class="lc-name">DISCORD</span>
+          <span class="lc-sub">Community server</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-2" href="https://x.com/i/communities/2032866017547006230" target="_blank">
+        <div class="lc-icon">◎</div>
+        <div>
+          <span class="lc-name">X COMMUNITY</span>
+          <span class="lc-sub">$LIBERTY group on X</span>
+        </div>
+      </a>
+      <a class="link-card reveal reveal-delay-3" href="https://liberty.marak.com" target="_blank">
+        <div class="lc-icon">⚑</div>
+        <div>
+          <span class="lc-name">PROJECT HUB</span>
+          <span class="lc-sub">liberty.marak.com</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-logo">$LIBERTY</div>
+  <div class="footer-credit">
+    Built by <a href="https://x.com/Defi_picasso" target="_blank">Picasso</a>
+  </div>
+</footer>
+
+<script>
+// ── COPY ADDRESS ──
+const CA = '4GKTTPSiyGPiRmjQkr82WKoeNykguarRZKwdwJtXpump';
+
+function copyAddress(btn, context) {
+  navigator.clipboard.writeText(CA).then(() => {
+    const original = btn.textContent;
+    if (context === 'main') {
+      btn.textContent = 'COPIED ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY ADDRESS'; btn.classList.remove('copied'); }, 2500);
+    } else if (context === 'hero') {
+      btn.textContent = '✓ COPIED';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2500);
+    } else if (context === 'nav') {
+      btn.textContent = '✓ COPIED!';
+      setTimeout(() => { btn.textContent = 'CA: 4GKTT...pump ⊕'; }, 2500);
+    }
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = CA;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = context === 'main' ? 'COPY ADDRESS' : context === 'hero' ? 'COPY' : 'CA: 4GKTT...pump ⊕'; }, 2000);
+  });
+}
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObs.observe(el));
+</script>
 </body>
 </html>
